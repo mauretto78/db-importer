@@ -1,0 +1,2 @@
+mysql_url: 'mysql://root:@Mauretto78@127.0.0.1:3306/sql_importer'
+sqlite_url: 'sqlite:/db/sql_importer.sqlite'

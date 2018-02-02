@@ -1,0 +1,36 @@
+{
+    "name": "mauretto78/db-importer",
+    "type": "library",
+    "description": "In Memory List",
+    "keywords": ["database", "sqlite", "mysql", "dbal", "postgres", "importer"],
+    "homepage": "https://github.com/mauretto78/db-importer",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/mauretto78/db-importer/issues"
+    },
+    "authors": [
+        {
+            "name": "Mauro Cassani",
+            "email": "assistenza@easy-grafica.com",
+            "homepage": "https://github.com/mauretto78"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "DbImporter\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DbImporter\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": "^5.6 || ^7.0",
+        "doctrine/dbal": "^2.6",
+        "jstayton/miner": "^0.10.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.7"
+    }
+}

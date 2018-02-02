@@ -1,0 +1,4 @@
+build
+config/parameters.yml
+db
+vendor

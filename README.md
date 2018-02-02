@@ -1,0 +1,546 @@
+# In-memory List
+
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mauretto78/in-memory-list/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mauretto78/in-memory-list/?branch=master)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/5bf086af-e45e-48f6-98dd-b7d5ea074130/mini.png)](https://insight.sensiolabs.com/projects/5bf086af-e45e-48f6-98dd-b7d5ea074130)
+[![Build Status](https://travis-ci.org/mauretto78/in-memory-list.svg?branch=master)](https://travis-ci.org/mauretto78/in-memory-list)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/84d8322496cb4a11bdc0ca01a4271b52)](https://www.codacy.com/app/mauretto78/in-memory-list?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mauretto78/in-memory-list&amp;utm_campaign=Badge_Grade)
+[![license](https://img.shields.io/github/license/mauretto78/in-memory-list.svg)]()
+[![Packagist](https://img.shields.io/packagist/v/mauretto78/in-memory-list.svg)]()
+
+**In-memory List** easily allows you to create and save your lists in memory.
+
+If you are looking for a caching system for your lists this library is suitable for you.
+
+Grab your lists from your API, your database or whatever you want and store them in memory: then, you can quickly retrieve your lists from cache, sorting and performing queries on them.
+
+This package uses:
+ 
+* [Apcu](http://php.net/manual/en/book.apcu.php)
+* [Memcached](https://memcached.org/)
+* [Pdo](http://php.net/manual/en/book.pdo.php)
+* [Redis](https://redis.io/)
+
+## Basic Usage
+
+To create and store in memory you list do the following:
+
+
+```php
+use InMemoryList\Application\Client;
+
+$array = [
+    ...
+]
+
+$client = new Client();
+$collection = $client->create($array);
+
+foreach ($collection as $element){
+    // ...
+}
+
+```
+
+## Drivers
+
+Avaliable drivers:
+
+* `apcu` 
+* `memcached` 
+* `pdo` 
+* `redis` (default driver)
+ 
+```php
+use InMemoryList\Application\Client;
+
+// Apcu, no configuration is needed
+$client = new Client('apcu');
+// ..
+```
+
+```php
+use InMemoryList\Application\Client;
+
+// Memcached, you can pass one or more servers
+$memcached_parameters = [
+    [
+        'host' => 'localhost',
+        'port' => 11211
+    ],
+    [
+        'host' => 'localhost',
+        'port' => 11222
+    ],
+    // etc..
+];
+
+$client = new Client('memcached', $memcached_parameters);
+// ..
+```  
+
+```php
+use InMemoryList\Application\Client;
+
+// Pdo
+$pdo_parameters = [
+    'driver' => 'mysql',
+    'host' => '127.0.0.1',
+    'username' => 'root',
+    'password' => '',
+    'database' => 'in-memory-list'
+    'port' => '3306'
+];
+
+$client = new Client('pdo', $pdo_parameters);
+// ..
+```   
+ 
+```php
+use InMemoryList\Application\Client;
+
+// you have to use arrays
+// you can't use URI string like 'tcp://10.0.0.1:6379'
+// please refer to PRedis library documentation
+$redis_parameters = [
+    'scheme' => 'tcp',
+    'host' => '127.0.0.1',
+    'port' => 6379,
+    'options' => [
+        'profile' => '3.0',
+    ],
+];
+
+$client = new Client('redis', $redis_parameters);
+// ..
+```
+
+Refer to [official page](https://github.com/nrk/predis) for more details on PRedis connection.
+
+## Parameters
+
+When use `create` method to a generate a list, you can provide to it a parameters array. The allowed keys are:
+
+* `uuid` - uuid of list
+* `element-uuid` - uuid for the list elements
+* `headers` - headers array for the list
+* `chunk-size` - the chunks size in which the array will be splitted (integer) **
+* `ttl` - time to live of the list (in seconds) **
+
+** = NOT AVALIABLE WITH PDO DRIVER
+
+### uuid
+
+You can assign an uuid to your list (instead, a [uuid](https://github.com/ramsey/uuid) will be generated):
+
+```php
+use InMemoryList\Application\Client;
+
+$array = [
+    ...
+]
+
+$client = new Client();
+$client->create($array, [
+    'uuid' => 'simple-array'
+]);
+
+// And now you can retrive the list:
+$simpleArray = $client->getRepository()->findListByUuid('simple-array');
+
+//..
+
+```
+
+### headers
+
+You can set a headers array to your list:
+
+```php
+use InMemoryList\Application\Client;
+
+$array = [
+    ...
+]
+
+$headers = [
+    'expires' => 'Sat, 26 Jul 1997 05:00:00 GMT',
+    'hash' => 'ec457d0a974c48d5685a7efa03d137dc8bbde7e3'
+];
+
+$client = new Client();
+$collection = $client->create($array, [
+    'uuid' => 'simple-array',
+    'headers' => $headers
+]);
+
+// get headers
+var_dump($client->getRepository()->getHeaders('simple-array'));
+
+// ...
+```
+
+### element-uuid
+
+You can assign an uuid to list elemens (instead, a [uuid](https://github.com/ramsey/uuid) will be generated). Consider this array:
+
+```php
+$simpleArray = [
+    [
+        "userId" => 1,
+        "id" => 1,
+        "title" => "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+        "body" =>  "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
+    ],
+    ...
+]
+```
+
+Maybe you would use `id` key as uuid in your list:
+
+```php
+use InMemoryList\Application\Client;
+
+$client = new Client();
+$collection = $client->create($simpleArray, [
+    'uuid' => 'simple-array',
+    'element-uuid' => 'id'
+]);
+
+// now to retrieve a single element, you can simply do:
+$itemWithId1 = $collection[1];
+
+```
+ 
+### chunk-size
+
+You can specify the number of elements of each chunk in which the original array will be splitted. The default value is `1000`.
+
+```php
+use InMemoryList\Application\Client;
+
+$client = new Client();
+$collection = $client->create($array, [
+    'uuid' => 'simple-array',
+    'element-uuid' => 'id',
+    'chunk-size' => 1500
+]);
+
+// ..
+```
+
+PLEASE NOTE THAT `chunk-size` IS NOT AVALIABLE WITH PDO DRIVER
+
+### ttl
+
+You can specify a ttl (in seconds) for your lists:
+
+```php
+use InMemoryList\Application\Client;
+
+$client = new Client();
+$collection = $client->create($array, [
+    'uuid' => 'simple-array',
+    'element-uuid' => 'id',
+    'ttl' => 3600
+]);
+
+// ..
+```
+
+PLEASE NOTE THAT `ttl` IS NOT AVALIABLE WITH PDO DRIVER
+
+## Delete an element
+
+To delete an element in you list do this:
+
+```php
+// ..
+$client->getRepository()->deleteElement(
+    $listUuid, 
+    $elementUuid,
+);
+```
+
+## Push an element
+
+To push an element in you list, use `pushElement` function. You must provide the list uuid, the element uuid and element data (data must be consistent - see Validation). Look at this example:
+
+```php
+// ..
+$client->pushElement(
+    'fake-list-uuid',
+    5001,
+    [
+        'id' => 5001,
+        'name' => 'Name 5001',
+        'email' => 'Email 5001',
+    ]
+);
+```
+
+## Update an element
+
+To update an element in you list, use `updateElement` function. You must provide the list uuid, the element uuid and element data (data must be consistent - see Validation). Look at this example:
+
+```php
+// ..
+$client->getRepository()->updateElement(
+    'list-to-update', 
+    4325, 
+    [
+        'id' => 4325,
+        'title' => 'New Title',
+        // ..
+    ]
+);
+```
+
+## Ttl
+
+You can update ttl of a persisted list with `updateTtl` method, and retrive the ttl with `getTtl` function:
+
+```php
+// ...
+$client->getRepository()->updateTtl(
+    'your-list-uuid',
+    3600 // ttl in seconds
+);
+
+// get Ttl of the list
+$client->getRepository()->getTtl('your-list-uuid'); // 3600
+```
+
+PLEASE NOTE THAT `ttl` IS NOT AVALIABLE WITH PDO DRIVER
+
+## Validation (Data consistency)
+
+Please note that your data **must be consistent**:
+
+```php
+// simple string list
+$stringArray = [
+    'Lorem Ipsum',
+    'Ipse Dixit',
+    'Dolor facium',
+];
+
+$collection = $client->create($stringArray, [
+    'uuid' => 'string-array',
+    'ttl' => 3600
+]);
+
+// array list, you must provide elements with consistent structure
+$listArray[] = [
+    'id' => 1,
+    'title' => 'Lorem Ipsum',
+];
+$listArray[] = [
+    'id' => 2,
+    'title' => 'Ipse Dixit',
+];
+$listArray[] = [
+    'id' => 3,
+    'title' => 'Dolor facium',
+];
+
+$collection = $client->create($listArray, [
+    'uuid' => 'simple-array',
+    'element-uuid' => 'id',
+    'ttl' => 3600
+]);
+
+// entity list, the objects must have the same properties 
+$entityArray[] = new User(1, 'Mauro');
+$entityArray[] = new User(2, 'Cristina');
+$entityArray[] = new User(3, 'Lilli');
+
+$collection = $client->create($entityArray, [
+    'uuid' => 'entity-array',
+    'element-uuid' => 'id',
+    'ttl' => 3600
+]);
+
+```
+
+Instead, a `ListElementNotConsistentException` will be thrown. Example:
+
+```php
+
+// ListElementNotConsistentException will be thrown
+$listArray[] = [
+    'id' => 1,
+    'title' => 'Lorem Ipsum',
+];
+$listArray[] = [
+    'id' => 2,
+    'non-consistent-key' => 'Ipse Dixit',
+];
+$listArray[] = [
+    'id' => 3,
+    'title' => 'Dolor facium',
+];
+
+$collection = $client->create($listArray, [
+    'uuid' => 'simple-array',
+    'element-uuid' => 'id',
+    'ttl' => 3600
+]);
+
+```
+
+## Sorting and Quering
+
+You can perform queries on your list. This library uses [Array Query](https://github.com/mauretto78/array-query), please refer to it for the official documentation.
+
+```php
+use ArrayQuery\QueryBuilder;
+
+// ..
+
+$list = $client->getRepository()->findListByUuid('simple-array');
+
+$qb = QueryBuilder::create($list);
+$qb
+    ->addCriterion('id', '3', '>')
+    ->sortedBy('id', 'DESC');
+  
+// get results    
+foreach ($qb->getResults() as $element){
+    // ...
+}
+```
+
+## Commands
+
+If you have an application which uses [Symfony Console](https://github.com/symfony/console), you have some commands avaliable:
+
+* `iml:cache:flush` to flush the cache
+* `iml:cache:index [<from>] [<to>]` to get full index of items stored in cache
+* `iml:cache:schema:create`   Create database schema (only for PDO driver)
+* `iml:cache:schema:destroy`  Destroys database schema (only for PDO driver)
+* `iml:cache:statistics` to get cache statistics
+
+You can register the commands in your app, consider this example:
+
+```php
+#!/usr/bin/env php
+
+<?php
+// Example of a Silex Application 'bin/console' file
+// we use \Knp\Provider\ConsoleServiceProvider as ConsoleServiceProvider, use what you want
+
+set_time_limit(0);
+
+require __DIR__.'/../vendor/autoload.php';
+
+$app = new Silex\Application();
+$app->register(new \Knp\Provider\ConsoleServiceProvider(), array(
+    'console.name'              => '...',
+    'console.version'           => '...',
+    'console.project_directory' => __DIR__.'/..'
+));
+
+$console = $app['console'];
+
+// add commands here
+...
+$console->add(new \InMemoryList\Command\CreateSchemaCommand(...));
+$console->add(new \InMemoryList\Command\DestroySchemaCommand(...));
+$console->add(new \InMemoryList\Command\FlushCommand(...));
+$console->add(new \InMemoryList\Command\IndexCommand(...));
+$console->add(new \InMemoryList\Command\StatisticsCommand(...));
+$console->run();
+```
+
+You have to provide to commands your driver and connection parameters array. Example:
+
+```php
+$console->add(new \InMemoryList\Command\FlushCommand('redis', [
+    'host' => '127.0.0.1',
+    'port' => 6379,
+]));
+```
+
+## Testing
+
+In order to run all the tests, you have two options:
+
+### 1. Install all the drivers on your machine
+
+The first way it to install **all the drivers** on your machine:
+
+* APCU - [(install via PECL)](https://pecl.php.net/package/APCu) 
+* MEMCACHED - [(install via PECL)](https://pecl.php.net/package/memcached) 
+* REDIS - [(official install guide)](https://redis.io/topics/quickstart)
+
+Once installed all the drivers, create a file called `config/parameters.yml` and paste in the content of `config/parameters.dist.yml`. Finally, change your configuration if needed:
+
+```yaml
+redis_parameters:
+  scheme: 'tcp'
+  host: '127.0.0.1'
+  port: '6379'
+  options:
+    profile: '3.2'
+
+memcached_parameters:
+  host: 'localhost'
+  port: '11211'
+
+pdo_parameters:
+  driver: 'mysql'
+  host: '127.0.0.1'
+  username: 'root'
+  password: ~
+  database: 'in-memory-list'
+  port: '3306'
+  options: ~  
+```
+
+### 2. Run the project with Docker
+
+You can run the project with [Docker](https://www.docker.com/).
+
+**STEP1: Make the build**
+
+```
+docker-compose build
+```
+
+**STEP2: Raise the app**
+
+```
+docker-compose up -d
+```
+
+**STEP3: Enter in the docker container**
+
+```
+docker exec -it inmemorylist_app_1 bash
+```
+
+**STEP4: Create the schema and run the tests in the container**
+
+```
+php bin/console iml:cache:schema:create
+
+vendor/bin/phpunit
+```
+
+## Built With
+
+* [PRedis](https://github.com/nrk/predis) - Flexible and feature-complete Redis client for PHP and HHVM
+* [ramsey/uuid](https://github.com/ramsey/uuid) - A PHP 5.4+ library for generating RFC 4122 version 1, 3, 4, and 5 universally unique identifiers (UUID).
+* [Symfony Console](https://github.com/symfony/console) - Symfony Console Component
+
+## Support
+
+If you found an issue or had an idea please refer [to this section](https://github.com/mauretto78/in-memory-list/issues).
+
+## Authors
+
+* **Mauro Cassani** - [github](https://github.com/mauretto78)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
