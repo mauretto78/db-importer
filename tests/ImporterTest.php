@@ -58,8 +58,31 @@ class ImporterTest extends TestCase
 
     /**
      * @test
+     * @expectedException \DbImporter\Exceptions\NotAllowedDriverException
+     * @expectedExceptionMessage The driver sqlsrv is not allowed. Drivers allowed are: [pdo_mysql,pdo_sqlite]
      */
-    public function mysqldfsfdsfsd()
+    public function it_throws_NotAllowedDriverException_if_a_not_yet_supported_driver_is_provided()
+    {
+        $connection = DriverManager::getConnection(
+            [
+                'url' => $this->config['sqlsrv_url'],
+            ],
+            new Configuration()
+        );
+
+        Importer::init(
+            $connection,
+            self::TABLE_NAME,
+            true,
+            $this->mapping,
+            $this->data
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function execute_the_import_query_with_mysql_driver()
     {
         $connection = DriverManager::getConnection(
             [
@@ -70,19 +93,19 @@ class ImporterTest extends TestCase
 
         $importer = Importer::init(
             $connection,
-            'example_table',
+            self::TABLE_NAME,
             true,
             $this->mapping,
             $this->data
         );
 
-        $this->executeQueryAndPerformTests($importer, $connection, 'mysql');
+        $this->executeQueryAndPerformTests($importer, $connection);
     }
 
     /**
      * @test
      */
-    public function sqlite()
+    public function execute_the_import_query_with_sqlite_driver()
     {
         $connection = DriverManager::getConnection(
             [
@@ -93,34 +116,34 @@ class ImporterTest extends TestCase
 
         $importer = Importer::init(
             $connection,
-            'example_table',
+            self::TABLE_NAME,
             true,
             $this->mapping,
             $this->data
         );
 
-        $this->executeQueryAndPerformTests($importer, $connection, 'sqlite');
+        $this->executeQueryAndPerformTests($importer, $connection);
     }
 
     /**
      * @param Importer $importer
      * @param Connection $connection
-     * @param $driver
      */
-    public function executeQueryAndPerformTests(Importer $importer, Connection $connection, $driver)
+    public function executeQueryAndPerformTests(Importer $importer, Connection $connection)
     {
-        $this->createSchema($connection, $driver);
+        $this->createSchema($connection);
+        $this->assertInstanceOf(Importer::class, $importer);
         $this->assertTrue($importer->executeQuery());
     }
 
     /**
      * @param Connection $connection
      */
-    protected function createSchema(Connection $connection, $driver)
+    protected function createSchema(Connection $connection)
     {
         $schema = new Schema();
 
-        if(false === $this->checkIfTableExists($connection, self::TABLE_NAME, $driver)){
+        if(false === $this->checkIfTableExists($connection, self::TABLE_NAME)){
             $table = $schema->createTable(self::TABLE_NAME);
             $table->addColumn('id', 'integer');
             $table->addColumn('name', 'string');
@@ -141,19 +164,10 @@ class ImporterTest extends TestCase
      * @param $table
      * @return bool
      */
-    public function checkIfTableExists(Connection $connection, $table, $driver)
+    public function checkIfTableExists(Connection $connection, $table)
     {
-        switch ($driver){
-            case 'mysql':
-                $query = 'DESC ' . $table;
-                break;
-
-            case 'sqlite':
-                $query = 'PRAGMA table_info( ' . $table .')';
-                break;
-        }
-
         try {
+            $query = 'SELECT count(*) as c FROM ' . $table;
             $connection->executeQuery($query);
         } catch (\Exception $e) {
             return false;
