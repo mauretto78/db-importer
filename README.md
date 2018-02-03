@@ -1,5 +1,7 @@
 # Db-Importer
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/405ac0573de54ba6a909d350818d0e20)](https://www.codacy.com/app/mauretto78/db-importer?utm_source=github.com&utm_medium=referral&utm_content=mauretto78/db-importer&utm_campaign=badger)
+
 Db Importer is a PHP library that allows you to import data in your database with very little effort Edit
 
 ## Basic Usage
