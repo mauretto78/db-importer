@@ -4,7 +4,7 @@
 [![license](https://img.shields.io/github/license/mauretto78/db-importer.svg)]()
 [![Packagist](https://img.shields.io/packagist/v/mauretto78/db-importer.svg)]()
 
-Db Importer is a PHP library that allows you to import data in your database with very little effort Edit
+Db Importer is a PHP library that allows you to import data in your database with very little effort.
 
 ## Basic Usage
 
@@ -17,7 +17,7 @@ use DbImporter\Importer;
 $importer = Importer::init(
     $connection, // your DBAL connection
     $table,      // table to import data
-    true,        // ignore duplicate
+    true,        // ignore duplicates
     $mapping,    // mapping array
     $data        // your data, must be an instance of `DataCollection` class.
 
@@ -30,7 +30,7 @@ $importer->executeQuery()
 
 ### Mapping
 
-The mapping array is a simple key value array in which you specify the column name on your database and the key in inpu data. Look at the example:
+The mapping array is a simple key value array in which you specify the column name on your database and the corresponding key in the input data. Look at the following example:
 
 ```php
 $mapping = [
@@ -46,6 +46,8 @@ $mapping = [
 The input data must be an instance of `DataCollection` class.
 
 ```php
+use DbImporter\Collections\DataCollection;
+
 $data = new DataCollection();
 $data->addItem([
     'id_utente' => 1,
