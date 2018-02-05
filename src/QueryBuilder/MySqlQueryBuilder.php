@@ -11,7 +11,7 @@ class MySqlQueryBuilder extends AbstractQueryBuilder
     {
         $sql = 'INSERT ';
 
-        if(true === $this->debug){
+        if (true === $this->debug) {
             $sql .= 'IGNORE ';
         }
 
@@ -19,7 +19,7 @@ class MySqlQueryBuilder extends AbstractQueryBuilder
         $c = 1;
         $values = array_keys($this->mapping);
 
-        foreach ($values as $value){
+        foreach ($values as $value) {
             $sql .= '`'.$value.'`';
             $sql .= $this->appendComma($c, $values);
             $c++;
@@ -39,7 +39,7 @@ class MySqlQueryBuilder extends AbstractQueryBuilder
         $c = 1;
         $values = array_keys($this->mapping);
 
-        foreach ($values as $value){
+        foreach ($values as $value) {
             $sql .= '`'.$value.'`=VALUES('.$value.')';
             $sql .= $this->appendComma($c, $values);
             $c++;

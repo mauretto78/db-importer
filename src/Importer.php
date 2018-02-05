@@ -64,8 +64,7 @@ class Importer
         $skipDuplicates,
         array $mapping,
         DataCollection $data
-    )
-    {
+    ) {
         $this->checkDriver($driver = $dbal->getDriver()->getName());
         $this->dbal = $dbal;
         $this->driver = $driver;
@@ -81,7 +80,7 @@ class Importer
      */
     private function checkDriver($driver)
     {
-        if(false === in_array($driver, self::ALLOWED_DRIVERS)){
+        if (false === in_array($driver, self::ALLOWED_DRIVERS)) {
             throw new NotAllowedDriverException(
                 sprintf(
                     'The driver %s is not allowed. Drivers allowed are: [%s]',
@@ -106,8 +105,7 @@ class Importer
         $skipDuplicates,
         array $mapping,
         DataCollection $data
-    )
-    {
+    ) {
         return new self(
             $dbal,
             $table,
@@ -122,7 +120,7 @@ class Importer
      */
     public function getQuery()
     {
-        switch ($this->driver){
+        switch ($this->driver) {
             case 'pdo_mysql':
                 $class = MySqlQueryBuilder::class;
                 break;
@@ -149,7 +147,7 @@ class Importer
         $stmt = $this->dbal->prepare($this->getQuery());
         $c = 1;
 
-        foreach ($this->data as $item){
+        foreach ($this->data as $item) {
             $this->bindValuesToItem($item, $c, $stmt);
             $c++;
         }
@@ -164,10 +162,10 @@ class Importer
      */
     private function bindValuesToItem($item, $index, Statement $stmt)
     {
-        foreach ($item as $key => $value){
+        foreach ($item as $key => $value) {
             $map = array_values($this->mapping);
 
-            if(in_array($key, $map)){
+            if (in_array($key, $map)) {
                 $key = ':'.$key.'_'.$index;
                 $stmt->bindValue($key, $value);
             }

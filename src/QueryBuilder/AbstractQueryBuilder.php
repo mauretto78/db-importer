@@ -39,8 +39,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         $debug,
         array $mapping,
         DataCollection $data
-    )
-    {
+    ) {
         $this->table = $table;
         $this->debug = $debug;
         $this->mapping = $mapping;
@@ -67,7 +66,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         $sql = '';
         $count = $this->data->count();
 
-        for ($c = 1; $c <= $count; $c++){
+        for ($c = 1; $c <= $count; $c++) {
             $sql .= '('.$this->getItemPlaceholders($c).')';
             $sql .= $this->appendComma($c, $this->data);
         }
@@ -85,7 +84,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         $c = 1;
         $values = array_values($this->mapping);
 
-        foreach ($values as $map){
+        foreach ($values as $map) {
             $sql .= ':'.$map.'_'.$index;
             $sql .= $this->appendComma($c, $values);
             $c++;

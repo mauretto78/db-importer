@@ -2,7 +2,7 @@
 
 namespace DbImporter\QueryBuilder\Contracts;
 
-interface  QueryBuilderInterface
+interface QueryBuilderInterface
 {
     /**
      * Returns the full query

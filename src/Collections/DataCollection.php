@@ -22,7 +22,7 @@ class DataCollection implements \IteratorAggregate, \Countable
      */
     public function addItems(array $items)
     {
-        foreach ($items as $item){
+        foreach ($items as $item) {
             $this->addItem($item);
         }
     }

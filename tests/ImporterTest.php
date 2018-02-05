@@ -143,7 +143,7 @@ class ImporterTest extends TestCase
     {
         $schema = new Schema();
 
-        if(false === $this->checkIfTableExists($connection, self::TABLE_NAME)){
+        if (false === $this->checkIfTableExists($connection, self::TABLE_NAME)) {
             $table = $schema->createTable(self::TABLE_NAME);
             $table->addColumn('id', 'integer');
             $table->addColumn('name', 'string');
@@ -154,7 +154,7 @@ class ImporterTest extends TestCase
             $platform = $connection->getDatabasePlatform();
             $queries = $schema->toSql($platform);
 
-            foreach ($queries as $query){
+            foreach ($queries as $query) {
                 $connection->executeQuery($query);
             }
         }
