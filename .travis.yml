@@ -1,0 +1,32 @@
+language: php
+
+sudo: required
+
+dist: trusty
+
+php:
+  - 7.1
+
+services:
+  - mysql
+
+global:
+  - REPORT_EXIT_STATUS=1
+
+before_install:
+  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('travis') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
+
+before_script:
+  - pecl install php7.1-sqlite
+  - cp config/parameters.travis.yml config/parameters.yml
+  - composer self-update
+  - composer install --prefer-source --no-interaction --dev
+
+script:
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+
+after_script:
+  - vendor/bin/coveralls -v
+
+matrix:
+  fast_finish: true
