@@ -27,7 +27,9 @@ $importer->executeQuery()
 
 ```
 
-### Mapping
+Please note that you must pass a [DBAL Connection](http://www.doctrine-project.org/projects/dbal.html) instance to Importer class.
+
+### Mapping array
 
 The mapping array is a simple key value array in which you specify the column name on your database and the corresponding key in the input data. Look at the following example:
 
@@ -42,12 +44,14 @@ $mapping = [
 
 ### Data
 
-The input data must be an instance of `DataCollection` class.
+The input data must be an instance of `DataCollection` class. You can add one item at a time or add items array in bulk: 
 
 ```php
 use DbImporter\Collections\DataCollection;
 
 $data = new DataCollection();
+
+// add one item at a time
 $data->addItem([
     'id_utente' => 1,
     'name_utente' => 'Mauro',
@@ -66,6 +70,23 @@ $data->addItem([
     'name_utente' => 'Matteo',
     'email_utente' => 'm.adamo@bestnetwork.it',
 ]);
+
+// add items array in bulk
+$data->addItems([
+    [
+        'id' => 4,
+        'name' => 'Roberto',
+        'email' => 'r.curti@bestnetwork.it',
+        'username' => 'rebberto',
+    ],
+    [
+        'id' => 5,
+        'name' => 'Nicola',
+        'email' => 'n.muzi@bestnetwork.it',
+        'username' => 'nicola',
+    ]
+]);
+
 ```
 
 ## Built With
