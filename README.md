@@ -4,8 +4,6 @@
 [![license](https://img.shields.io/github/license/mauretto78/db-importer.svg)]()
 [![Packagist](https://img.shields.io/packagist/v/mauretto78/db-importer.svg)]()
 
-Db Importer is a PHP library that allows you to import data in your database with very little effort.
-
 ## Basic Usage
 
 To use Importer simply do this:
