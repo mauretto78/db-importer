@@ -1,5 +1,5 @@
 .idea
 build
 config/parameters.yml
-db
+db/sql_importer.sqlite
 vendor

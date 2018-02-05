@@ -18,7 +18,7 @@ before_install:
 
 before_script:
   - cp config/parameters.travis.yml config/parameters.yml
-  - touch db/sql_importer.sqlite
+  - cp db/sql_importer.travis.sqlite db/sql_importer.sqlite
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
 
