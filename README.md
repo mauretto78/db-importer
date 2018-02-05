@@ -5,6 +5,8 @@
 [![license](https://img.shields.io/github/license/mauretto78/db-importer.svg)]()
 [![Packagist](https://img.shields.io/packagist/v/mauretto78/db-importer.svg)]()
 
+This library allows you to import data in your database with very low effort.
+
 ## Basic Usage
 
 To use Importer simply do this:
@@ -31,14 +33,14 @@ Please note that you must pass a [DBAL Connection](http://www.doctrine-project.o
 
 ### Mapping array
 
-The mapping array is a simple key value array in which you specify the column name on your database and the corresponding key in the input data. Look at the following example:
+The mapping array is a simple key value array in which you specify the column name on your database's table and the corresponding key in the input data. Look at the following example:
 
 ```php
 $mapping = [
-    'id' => 'id_utente',             // 'id' is the column name on your database. 'id_utente' is the key in input data
-    'name' => 'name_utente',         // 'name' is the column name on your database. 'name_utente' is the key in input data
-    'username' => 'username_utente', // 'username' is the column name on your database. 'username_utente' is the key in input data
-    'email' => 'email_utente',       // 'email' is the column name on your database. 'email_utente' is the key in input data
+    'id' => 'id_utente',             // 'id' is the column name on your database's table. 'id_utente' is the key in input data
+    'name' => 'name_utente',         // 'name' is the column name on your database's table. 'name_utente' is the key in input data
+    'username' => 'username_utente', // 'username' is the column name on your database's table. 'username_utente' is the key in input data
+    'email' => 'email_utente',       // 'email' is the column name on your database's table. 'email_utente' is the key in input data
 ];
 ```
 
