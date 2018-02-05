@@ -49,12 +49,25 @@ class MySqlQueryBuilder extends AbstractQueryBuilder
     }
 
     /**
-     * Returns the full query
-     *
      * @return string
      */
-    public function getQuery()
+    public function getMultipleInsertQuery()
     {
-        return $this->getQueryHead().$this->getQueryBody().$this->getQueryTail();
+        return $this->getQueryHead().$this->getMultipleInsertQueryBody().$this->getQueryTail();
+    }
+
+    /**
+     * @return array
+     */
+    public function getSingleInsertQueries()
+    {
+        $sql = [];
+        $queries = $this->getSingleInsertQueriesBody();
+
+        foreach ($queries as $query){
+            $sql[] = $this->getQueryHead().$query.$this->getQueryTail();
+        }
+
+        return $sql ;
     }
 }

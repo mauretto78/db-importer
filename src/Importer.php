@@ -4,6 +4,7 @@ namespace DbImporter;
 
 use DbImporter\Collections\DataCollection;
 use DbImporter\Exceptions\NotAllowedDriverException;
+use DbImporter\Exceptions\NotAllowedModeException;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
 use DbImporter\QueryBuilder\MySqlQueryBuilder;
 use DbImporter\QueryBuilder\SqliteQueryBuilder;
@@ -18,6 +19,14 @@ class Importer
     const ALLOWED_DRIVERS = [
         'pdo_mysql',
         'pdo_sqlite',
+    ];
+
+    /**
+     * Allowed modes
+     */
+    const ALLOWED_MODES = [
+        'single',
+        'multiple',
     ];
 
     /**
@@ -51,27 +60,36 @@ class Importer
     private $data;
 
     /**
+     * @var string
+     */
+    private $mode;
+
+    /**
      * Importer constructor.
      * @param Connection $dbal
      * @param $table
-     * @param $skipDuplicates
      * @param array $mapping
      * @param DataCollection $data
+     * @param $skipDuplicates
+     * @param string $mode
      */
     private function __construct(
         Connection $dbal,
         $table,
-        $skipDuplicates,
         array $mapping,
-        DataCollection $data
+        DataCollection $data,
+        $skipDuplicates,
+        $mode = 'multiple'
     ) {
         $this->checkDriver($driver = $dbal->getDriver()->getName());
+        $this->checkMode($mode);
         $this->dbal = $dbal;
         $this->driver = $driver;
         $this->table = $table;
-        $this->skipDuplicates = $skipDuplicates;
         $this->mapping = $mapping;
         $this->data = $data;
+        $this->skipDuplicates = $skipDuplicates;
+        $this->mode = $mode;
     }
 
     /**
@@ -92,6 +110,23 @@ class Importer
     }
 
     /**
+     * @param $mode
+     * @throws NotAllowedModeException
+     */
+    private function checkMode($mode)
+    {
+        if (false === in_array($mode, self::ALLOWED_MODES)) {
+            throw new NotAllowedModeException(
+                sprintf(
+                    'The mode %s is not allowed. Drivers allowed are: [%s]',
+                    $mode,
+                    implode(',', self::ALLOWED_MODES)
+                )
+            );
+        }
+    }
+
+    /**
      * @param Connection $dbal
      * @param $table
      * @param $skipDuplicates
@@ -102,16 +137,18 @@ class Importer
     public static function init(
         Connection $dbal,
         $table,
-        $skipDuplicates,
         array $mapping,
-        DataCollection $data
+        DataCollection $data,
+        $skipDuplicates,
+        $mode = 'multiple'
     ) {
         return new self(
             $dbal,
             $table,
-            $skipDuplicates,
             $mapping,
-            $data
+            $data,
+            $skipDuplicates,
+            $mode
         );
     }
 
@@ -120,23 +157,44 @@ class Importer
      */
     public function getQuery()
     {
-        switch ($this->driver) {
-            case 'pdo_mysql':
-                $class = MySqlQueryBuilder::class;
-                break;
-
-            case 'pdo_sqlite':
-                $class = SqliteQueryBuilder::class;
-                break;
-        }
+        $class = $this->getQueryClass();
+        $method = $this->getQueryMethod();
 
         /** @var $class QueryBuilderInterface */
         return (new $class(
             $this->table,
-            $this->skipDuplicates,
             $this->mapping,
-            $this->data
-        ))->getQuery();
+            $this->data,
+            $this->skipDuplicates
+        ))->$method();
+    }
+
+    /**
+     * @return string
+     */
+    private function getQueryClass()
+    {
+        switch ($this->driver) {
+            case 'pdo_mysql':
+                return MySqlQueryBuilder::class;
+
+            case 'pdo_sqlite':
+                return SqliteQueryBuilder::class;
+        }
+    }
+
+    /**
+     * @return string
+     */
+    private function getQueryMethod()
+    {
+        switch ($this->mode){
+            case 'single':
+                return 'getSingleInsertQueries';
+
+            case 'multiple':
+                return  'getMultipleInsertQuery';
+        }
     }
 
     /**
@@ -144,11 +202,46 @@ class Importer
      */
     public function executeQuery()
     {
+        switch ($this->mode){
+            case 'single':
+                return $this->executeSingleInsertQueries();
+
+            case 'multiple':
+                return $this->executeMultipleInsertQuery();
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function executeSingleInsertQueries()
+    {
+        $queries = $this->getQuery();
+        $c = 0;
+
+        foreach ($queries as $query){
+            $stmt = $this->dbal->prepare($query);
+            $this->bindValuesToItem($this->data->getItem($c), $stmt);
+            $c++;
+
+            if(false === $stmt->execute()){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    private function executeMultipleInsertQuery()
+    {
         $stmt = $this->dbal->prepare($this->getQuery());
         $c = 1;
 
         foreach ($this->data as $item) {
-            $this->bindValuesToItem($item, $c, $stmt);
+            $this->bindValuesToItem($item, $stmt, $c);
             $c++;
         }
 
@@ -160,13 +253,13 @@ class Importer
      * @param $index
      * @param Statement $stmt
      */
-    private function bindValuesToItem($item, $index, Statement $stmt)
+    private function bindValuesToItem($item, Statement $stmt, $index = null)
     {
         foreach ($item as $key => $value) {
             $map = array_values($this->mapping);
 
             if (in_array($key, $map)) {
-                $key = ':'.$key.'_'.$index;
+                $key = ($index) ? ':'.$key.'_'.$index : $key;
                 $stmt->bindValue($key, $value);
             }
         }

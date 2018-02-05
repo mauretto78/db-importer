@@ -73,16 +73,40 @@ class ImporterTest extends TestCase
         Importer::init(
             $connection,
             self::TABLE_NAME,
-            true,
             $this->mapping,
-            $this->data
+            $this->data,
+            true
+        );
+    }
+
+    /**
+     * @test
+     * @expectedException \DbImporter\Exceptions\NotAllowedModeException
+     * @expectedExceptionMessage The mode not-allowed-insert-mode is not allowed. Drivers allowed are: [single,multiple]
+     */
+    public function it_throws_NotAllowedModeException_if_a_not_yet_supported_driver_is_provided()
+    {
+        $connection = DriverManager::getConnection(
+            [
+                'url' => $this->config['mysql_url'],
+            ],
+            new Configuration()
+        );
+
+        Importer::init(
+            $connection,
+            self::TABLE_NAME,
+            $this->mapping,
+            $this->data,
+            true,
+            'not-allowed-insert-mode'
         );
     }
 
     /**
      * @test
      */
-    public function execute_the_import_query_with_mysql_driver()
+    public function execute_the_multiple__import_query_with_mysql_driver()
     {
         $connection = DriverManager::getConnection(
             [
@@ -94,9 +118,9 @@ class ImporterTest extends TestCase
         $importer = Importer::init(
             $connection,
             self::TABLE_NAME,
-            true,
             $this->mapping,
-            $this->data
+            $this->data,
+            true
         );
 
         $this->executeQueryAndPerformTests($importer, $connection);
@@ -105,7 +129,7 @@ class ImporterTest extends TestCase
     /**
      * @test
      */
-    public function execute_the_import_query_with_sqlite_driver()
+    public function execute_the_multiple_import_query_with_sqlite_driver()
     {
         $connection = DriverManager::getConnection(
             [
@@ -117,9 +141,57 @@ class ImporterTest extends TestCase
         $importer = Importer::init(
             $connection,
             self::TABLE_NAME,
-            true,
             $this->mapping,
-            $this->data
+            $this->data,
+            true
+        );
+
+        $this->executeQueryAndPerformTests($importer, $connection);
+    }
+
+    /**
+     * @test
+     */
+    public function execute_the_single_import_query_with_mysql_driver()
+    {
+        $connection = DriverManager::getConnection(
+            [
+                'url' => $this->config['mysql_url'],
+            ],
+            new Configuration()
+        );
+
+        $importer = Importer::init(
+            $connection,
+            self::TABLE_NAME,
+            $this->mapping,
+            $this->data,
+            true,
+            'single'
+        );
+
+        $this->executeQueryAndPerformTests($importer, $connection);
+    }
+
+    /**
+     * @test
+     */
+    public function execute_the_single_import_query_with_sqlite_driver()
+    {
+        $connection = DriverManager::getConnection(
+            [
+                'url' => $this->config['sqlite_url'],
+            ],
+            new Configuration()
+        );
+
+        $importer = Importer::init(
+            $connection,
+            self::TABLE_NAME,
+            $this->mapping,
+            $this->data,
+            true,
+            'single'
         );
 
         $this->executeQueryAndPerformTests($importer, $connection);

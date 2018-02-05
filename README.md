@@ -18,10 +18,10 @@ use DbImporter\Importer;
 $importer = Importer::init(
     $connection, // your DBAL connection
     $table,      // table to import data
-    true,        // ignore duplicates
     $mapping,    // mapping array
     $data        // your data, must be an instance of `DataCollection` class.
-
+    $ignore,     // ignore duplicates (boolean). True is default value
+    $mode        // insert mode. 'single' or 'multiple' are the only values allowed. 'multiple' is default value
 );
 
 // Execute import query
@@ -91,6 +91,13 @@ $data->addItems([
 
 ```
 
+### Insert Mode (multiple or single)
+
+You can decide the insert mode:
+ 
+* 'multiple' (default) - insert data in a unique multiple insert query
+* 'single' - insert data in a loop of insert queries
+ 
 ## Built With
 
 * [DBAL](http://www.doctrine-project.org/projects/dbal.html) - Database Abstraction Layer

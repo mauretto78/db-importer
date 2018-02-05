@@ -36,6 +36,15 @@ class DataCollection implements \IteratorAggregate, \Countable
     }
 
     /**
+     * @param $index
+     * @return mixed
+     */
+    public function getItem($index)
+    {
+        return $this->items[$index];
+    }
+
+    /**
      * @return \ArrayIterator
      */
     public function getIterator()

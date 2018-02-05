@@ -36,14 +36,14 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
      */
     public function __construct(
         $table,
-        $debug,
         array $mapping,
-        DataCollection $data
+        DataCollection $data,
+        $debug
     ) {
         $this->table = $table;
-        $this->debug = $debug;
         $this->mapping = $mapping;
         $this->data = $data;
+        $this->debug = $debug;
     }
 
     /**
@@ -61,7 +61,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     /**
      * @return string
      */
-    protected function getQueryBody()
+    protected function getMultipleInsertQueryBody()
     {
         $sql = '';
         $count = $this->data->count();
@@ -75,17 +75,32 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * @return array
+     */
+    protected function getSingleInsertQueriesBody()
+    {
+        $sql = [];
+        $count = $this->data->count();
+
+        for ($c = 1; $c <= $count; $c++) {
+            $sql[] = '('.$this->getItemPlaceholders().')';
+        }
+
+        return $sql;
+    }
+
+    /**
      * @param $index
      * @return string
      */
-    private function getItemPlaceholders($index)
+    private function getItemPlaceholders($index = null)
     {
         $sql = '';
         $c = 1;
         $values = array_values($this->mapping);
 
         foreach ($values as $map) {
-            $sql .= ':'.$map.'_'.$index;
+            $sql .= ($index) ? ':'.$map.'_'.$index : ':'.$map;
             $sql .= $this->appendComma($c, $values);
             $c++;
         }
