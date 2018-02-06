@@ -26,7 +26,7 @@ $importer = Importer::init(
 );
 
 // Execute import query
-$importer->executeQuery()
+$importer->execute()
 
 ```
 
