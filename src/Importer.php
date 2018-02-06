@@ -159,7 +159,6 @@ class Importer
     {
         $queryBuilder = $this->getQueryBuilder();
 
-        /** @var $class QueryBuilderInterface */
         return (new $queryBuilder(
             $this->table,
             $this->mapping,
@@ -194,6 +193,7 @@ class Importer
                 return $this->executeMultipleInsertQuery();
         }
     }
+
     /**
      * @return bool
      */
@@ -214,6 +214,7 @@ class Importer
 
         return true;
     }
+
     /**
      * @return bool
      */
@@ -229,23 +230,22 @@ class Importer
         foreach ($queries as $query){
             $stmt = $this->dbal->prepare($query);
             $c = 1;
-            $d = array_slice($this->data->toArray(), ($start*$limit), $limit);
+            $dataSliced = array_slice($this->data->toArray(), ($start*$limit), $limit);
 
-            foreach ($d as $item) {
+            foreach ($dataSliced as $item) {
                 $this->bindValuesToItem($item, $stmt, $c);
                 $c++;
             }
 
-            $start++;
-
             if(false === $stmt->execute()){
                 return false;
             }
+
+            $start++;
         }
 
         return true;
     }
-
 
     /**
      * @param $item
