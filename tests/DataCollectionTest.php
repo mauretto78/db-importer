@@ -3,9 +3,8 @@
 namespace DbImporter\Tests;
 
 use DbImporter\Collections\DataCollection;
-use PHPUnit\Framework\TestCase;
 
-class DataCollectionTest extends TestCase
+class DataCollectionTest extends BaseTestCase
 {
     /**
      * @test

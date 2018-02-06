@@ -5,9 +5,8 @@ namespace DbImporter\Tests;
 use DbImporter\Collections\DataCollection;
 use DbImporter\QueryBuilder\MySqlQueryBuilder;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
-use PHPUnit\Framework\TestCase;
 
-class MySqlQueryBuilderTest extends TestCase
+class MySqlQueryBuilderTest extends BaseTestCase
 {
     /**
      * @test

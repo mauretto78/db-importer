@@ -3,12 +3,10 @@
 namespace DbImporter\Tests;
 
 use DbImporter\Collections\DataCollection;
-use DbImporter\QueryBuilder\MySqlQueryBuilder;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
 use DbImporter\QueryBuilder\SqliteQueryBuilder;
-use PHPUnit\Framework\TestCase;
 
-class SqliteQueryBuilderTest extends TestCase
+class SqliteQueryBuilderTest extends BaseTestCase
 {
     /**
      * @test

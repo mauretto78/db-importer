@@ -5,12 +5,9 @@ namespace DbImporter\Tests;
 use DbImporter\Collections\DataCollection;
 use DbImporter\Importer;
 use Doctrine\DBAL\Configuration;
-use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Schema\Schema;
-use PHPUnit\Framework\TestCase;
 
-class ImporterTest extends TestCase
+class ImporterTest extends BaseTestCase
 {
     const TABLE_NAME = 'example_table';
 
@@ -18,8 +15,26 @@ class ImporterTest extends TestCase
      * @var array
      */
     private $config;
+
+    /**
+     * @var array
+     */
     private $data;
+
+    /**
+     * @var array
+     */
     private $mapping;
+
+    /**
+     * @var array
+     */
+    private $keys;
+
+    /**
+     * @var array
+     */
+    private $uniqueKeys;
 
     /**
      * setUp
@@ -54,6 +69,15 @@ class ImporterTest extends TestCase
             'username' => 'username_utente',
             'email' => 'email_utente',
         ];
+
+        $this->keys = [
+            'id' => 'integer',
+            'name' => 'string',
+            'email' => 'string',
+            'username' => 'string',
+        ];
+
+        $this->uniqueKeys = ['id'];
     }
 
     /**
@@ -106,7 +130,7 @@ class ImporterTest extends TestCase
     /**
      * @test
      */
-    public function execute_the_multiple__import_query_with_mysql_driver()
+    public function execute_the_multiple_import_query_with_mysql_driver()
     {
         $connection = DriverManager::getConnection(
             [
@@ -123,7 +147,13 @@ class ImporterTest extends TestCase
             true
         );
 
-        $this->executeQueryAndPerformTests($importer, $connection);
+        $this->executeQueryAndPerformTests(
+            $importer,
+            $connection,
+            self::TABLE_NAME,
+            $this->keys,
+            $this->uniqueKeys
+        );
     }
 
     /**
@@ -146,7 +176,13 @@ class ImporterTest extends TestCase
             true
         );
 
-        $this->executeQueryAndPerformTests($importer, $connection);
+        $this->executeQueryAndPerformTests(
+            $importer,
+            $connection,
+            self::TABLE_NAME,
+            $this->keys,
+            $this->uniqueKeys
+        );
     }
 
     /**
@@ -170,7 +206,13 @@ class ImporterTest extends TestCase
             'single'
         );
 
-        $this->executeQueryAndPerformTests($importer, $connection);
+        $this->executeQueryAndPerformTests(
+            $importer,
+            $connection,
+            self::TABLE_NAME,
+            $this->keys,
+            $this->uniqueKeys
+        );
     }
 
     /**
@@ -194,57 +236,12 @@ class ImporterTest extends TestCase
             'single'
         );
 
-        $this->executeQueryAndPerformTests($importer, $connection);
-    }
-
-    /**
-     * @param Importer $importer
-     * @param Connection $connection
-     */
-    public function executeQueryAndPerformTests(Importer $importer, Connection $connection)
-    {
-        $this->createSchema($connection);
-        $this->assertInstanceOf(Importer::class, $importer);
-        $this->assertTrue($importer->executeQuery());
-    }
-
-    /**
-     * @param Connection $connection
-     */
-    protected function createSchema(Connection $connection)
-    {
-        $schema = new Schema();
-
-        if (false === $this->checkIfTableExists($connection, self::TABLE_NAME)) {
-            $table = $schema->createTable(self::TABLE_NAME);
-            $table->addColumn('id', 'integer');
-            $table->addColumn('name', 'string');
-            $table->addColumn('email', 'string');
-            $table->addColumn('username', 'string', ['length' => 32]);
-            $table->setPrimaryKey(['id']);
-
-            $platform = $connection->getDatabasePlatform();
-            $queries = $schema->toSql($platform);
-
-            foreach ($queries as $query) {
-                $connection->executeQuery($query);
-            }
-        }
-    }
-
-    /**
-     * @param $table
-     * @return bool
-     */
-    public function checkIfTableExists(Connection $connection, $table)
-    {
-        try {
-            $query = 'SELECT count(*) as c FROM ' . $table;
-            $connection->executeQuery($query);
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        return true;
+        $this->executeQueryAndPerformTests(
+            $importer,
+            $connection,
+            self::TABLE_NAME,
+            $this->keys,
+            $this->uniqueKeys
+        );
     }
 }
