@@ -4,6 +4,8 @@ namespace DbImporter\QueryBuilder;
 
 class SqliteQueryBuilder extends AbstractQueryBuilder
 {
+    const MULTIPLE_QUERY_IMPORT_LIMIT = 100;
+
     /**
      * @return string
      */
@@ -31,25 +33,29 @@ class SqliteQueryBuilder extends AbstractQueryBuilder
     }
 
     /**
-     * @return string
-     */
-    public function getMultipleInsertQuery()
-    {
-        return $this->getQueryHead().$this->getMultipleInsertQueryBody();
-    }
-
-    /**
+     * Returns the array of insert queries
+     * @param string $mode
+     *
      * @return array
      */
-    public function getSingleInsertQueries()
+    public function getQueries($mode = 'multiple')
     {
         $sql = [];
-        $queries = $this->getSingleInsertQueriesBody();
+
+        switch ($mode) {
+            case 'multiple':
+                $queries = $this->getMultipleInsertQueriesBody(self::MULTIPLE_QUERY_IMPORT_LIMIT);
+                break;
+
+            case 'single':
+                $queries = $this->getSingleInsertQueriesBody();
+                break;
+        }
 
         foreach ($queries as $query){
             $sql[] = $this->getQueryHead().$query;
         }
 
-        return $sql ;
+        return $sql;
     }
 }

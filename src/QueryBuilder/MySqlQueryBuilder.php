@@ -4,6 +4,8 @@ namespace DbImporter\QueryBuilder;
 
 class MySqlQueryBuilder extends AbstractQueryBuilder
 {
+    const MULTIPLE_QUERY_IMPORT_LIMIT = 4000;
+
     /**
      * @return string
      */
@@ -49,25 +51,29 @@ class MySqlQueryBuilder extends AbstractQueryBuilder
     }
 
     /**
-     * @return string
-     */
-    public function getMultipleInsertQuery()
-    {
-        return $this->getQueryHead().$this->getMultipleInsertQueryBody().$this->getQueryTail();
-    }
-
-    /**
+     * Returns the array of insert queries
+     * @param string $mode
+     *
      * @return array
      */
-    public function getSingleInsertQueries()
+    public function getQueries($mode = 'multiple')
     {
         $sql = [];
-        $queries = $this->getSingleInsertQueriesBody();
+
+        switch ($mode) {
+            case 'multiple':
+                $queries = $this->getMultipleInsertQueriesBody(self::MULTIPLE_QUERY_IMPORT_LIMIT);
+                break;
+
+            case 'single':
+                $queries = $this->getSingleInsertQueriesBody();
+                break;
+        }
 
         foreach ($queries as $query){
             $sql[] = $this->getQueryHead().$query.$this->getQueryTail();
         }
 
-        return $sql ;
+        return $sql;
     }
 }

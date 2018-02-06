@@ -46,11 +46,13 @@ class MySqlQueryBuilderTest extends BaseTestCase
             true
         );
 
-        $query = $qb->getMultipleInsertQuery();
-        $expectedQuery = 'INSERT IGNORE INTO `example_table` (`id`, `name`, `username`) VALUES (:id_utente_1, :name_utente_1, :username_utente_1), (:id_utente_2, :name_utente_2, :username_utente_2), (:id_utente_3, :name_utente_3, :username_utente_3) ON DUPLICATE KEY UPDATE `id`=VALUES(id), `name`=VALUES(name), `username`=VALUES(username)';
+        $queries = $qb->getQueries();
+        foreach ($queries as $query){
+            $expectedQuery = 'INSERT IGNORE INTO `example_table` (`id`, `name`, `username`) VALUES (:id_utente_1, :name_utente_1, :username_utente_1), (:id_utente_2, :name_utente_2, :username_utente_2), (:id_utente_3, :name_utente_3, :username_utente_3) ON DUPLICATE KEY UPDATE `id`=VALUES(id), `name`=VALUES(name), `username`=VALUES(username)';
 
-        $this->assertInstanceOf(QueryBuilderInterface::class, $qb);
-        $this->assertEquals($query, $expectedQuery);
+            $this->assertInstanceOf(QueryBuilderInterface::class, $qb);
+            $this->assertEquals($query, $expectedQuery);
+        }
     }
 
     /**
@@ -91,7 +93,7 @@ class MySqlQueryBuilderTest extends BaseTestCase
             true
         );
 
-        $queries = $qb->getSingleInsertQueries();
+        $queries = $qb->getQueries('single');
         foreach ($queries as $query){
             $expectedQuery = 'INSERT IGNORE INTO `example_table` (`id`, `name`, `username`) VALUES (:id_utente, :name_utente, :username_utente) ON DUPLICATE KEY UPDATE `id`=VALUES(id), `name`=VALUES(name), `username`=VALUES(username)';
 

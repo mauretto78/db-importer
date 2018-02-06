@@ -155,24 +155,23 @@ class Importer
     /**
      * @return string
      */
-    public function getQuery()
+    public function getQueries()
     {
-        $class = $this->getQueryClass();
-        $method = $this->getQueryMethod();
+        $queryBuilder = $this->getQueryBuilder();
 
         /** @var $class QueryBuilderInterface */
-        return (new $class(
+        return (new $queryBuilder(
             $this->table,
             $this->mapping,
             $this->data,
             $this->skipDuplicates
-        ))->$method();
+        ))->getQueries($this->mode);
     }
 
     /**
      * @return string
      */
-    private function getQueryClass()
+    private function getQueryBuilder()
     {
         switch ($this->driver) {
             case 'pdo_mysql':
@@ -184,39 +183,23 @@ class Importer
     }
 
     /**
-     * @return string
-     */
-    private function getQueryMethod()
-    {
-        switch ($this->mode){
-            case 'single':
-                return 'getSingleInsertQueries';
-
-            case 'multiple':
-                return  'getMultipleInsertQuery';
-        }
-    }
-
-    /**
      * @return bool
      */
-    public function executeQuery()
+    public function execute()
     {
         switch ($this->mode){
             case 'single':
                 return $this->executeSingleInsertQueries();
-
             case 'multiple':
                 return $this->executeMultipleInsertQuery();
         }
     }
-
     /**
      * @return bool
      */
     private function executeSingleInsertQueries()
     {
-        $queries = $this->getQuery();
+        $queries = $this->getQueries();
         $c = 0;
 
         foreach ($queries as $query){
@@ -231,22 +214,38 @@ class Importer
 
         return true;
     }
-
     /**
      * @return bool
      */
     private function executeMultipleInsertQuery()
     {
-        $stmt = $this->dbal->prepare($this->getQuery());
-        $c = 1;
+        $queries = $this->getQueries();
 
-        foreach ($this->data as $item) {
-            $this->bindValuesToItem($item, $stmt, $c);
-            $c++;
+        /** @var QueryBuilderInterface $queryBuilder */
+        $queryBuilder = $this->getQueryBuilder();
+        $limit = $queryBuilder::MULTIPLE_QUERY_IMPORT_LIMIT;
+        $start = 0;
+
+        foreach ($queries as $query){
+            $stmt = $this->dbal->prepare($query);
+            $c = 1;
+            $d = array_slice($this->data->toArray(), ($start*$limit), $limit);
+
+            foreach ($d as $item) {
+                $this->bindValuesToItem($item, $stmt, $c);
+                $c++;
+            }
+
+            $start++;
+
+            if(false === $stmt->execute()){
+                return false;
+            }
         }
 
-        return $stmt->execute();
+        return true;
     }
+
 
     /**
      * @param $item

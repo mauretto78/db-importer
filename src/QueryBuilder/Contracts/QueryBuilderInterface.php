@@ -5,16 +5,16 @@ namespace DbImporter\QueryBuilder\Contracts;
 interface QueryBuilderInterface
 {
     /**
-     * Returns the full multiple insert query
-     *
-     * @return string
+     * Default multiple query import limit
+     * Override this value in concrete implementation
      */
-    public function getMultipleInsertQuery();
+    const MULTIPLE_QUERY_IMPORT_LIMIT = 1000;
 
     /**
-     * Returns the array of single insert query
+     * Returns the array of insert queries
+     * @param string $mode
      *
      * @return array
      */
-    public function getSingleInsertQueries();
+    public function getQueries($mode = 'multiple');
 }

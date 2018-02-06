@@ -61,7 +61,7 @@ abstract class BaseTestCase extends TestCase
     {
         $this->createSchema($connection, $tableName, $keys, $uniqueKeys);
         $this->assertInstanceOf(Importer::class, $importer);
-        $this->assertTrue($importer->executeQuery());
+        $this->assertTrue($importer->execute());
     }
 
     /**

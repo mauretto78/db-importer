@@ -46,11 +46,13 @@ class SqliteQueryBuilderTest extends BaseTestCase
             true
         );
 
-        $query = $qb->getMultipleInsertQuery();
-        $expectedQuery = 'INSERT OR IGNORE INTO `example_table` (`id`, `name`, `username`) VALUES (:id_utente_1, :name_utente_1, :username_utente_1), (:id_utente_2, :name_utente_2, :username_utente_2), (:id_utente_3, :name_utente_3, :username_utente_3)';
+        $queries = $qb->getQueries();
+        foreach ($queries as $query){
+            $expectedQuery = 'INSERT OR IGNORE INTO `example_table` (`id`, `name`, `username`) VALUES (:id_utente_1, :name_utente_1, :username_utente_1), (:id_utente_2, :name_utente_2, :username_utente_2), (:id_utente_3, :name_utente_3, :username_utente_3)';
 
-        $this->assertInstanceOf(QueryBuilderInterface::class, $qb);
-        $this->assertEquals($query, $expectedQuery);
+            $this->assertInstanceOf(QueryBuilderInterface::class, $qb);
+            $this->assertEquals($query, $expectedQuery);
+        }
     }
 
     /**
@@ -91,7 +93,7 @@ class SqliteQueryBuilderTest extends BaseTestCase
             true
         );
 
-        $queries = $qb->getSingleInsertQueries();
+        $queries = $qb->getQueries('single');
         foreach ($queries as $query){
             $expectedQuery = 'INSERT OR IGNORE INTO `example_table` (`id`, `name`, `username`) VALUES (:id_utente, :name_utente, :username_utente)';
 

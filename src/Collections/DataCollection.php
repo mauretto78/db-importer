@@ -5,7 +5,7 @@ namespace DbImporter\Collections;
 class DataCollection implements \IteratorAggregate, \Countable
 {
     /**
-     * @var array
+     * @var \ArrayObject
      */
     private $items = [];
 
@@ -58,5 +58,13 @@ class DataCollection implements \IteratorAggregate, \Countable
     public function count()
     {
         return count($this->items);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return (array)$this->items;
     }
 }

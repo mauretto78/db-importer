@@ -59,16 +59,23 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @return string
+     * @return array
      */
-    protected function getMultipleInsertQueryBody()
+    protected function getMultipleInsertQueriesBody($limit)
     {
-        $sql = '';
-        $count = $this->data->count();
+        $sql = [];
+        $data = array_chunk($this->data->toArray(), $limit, true);
 
-        for ($c = 1; $c <= $count; $c++) {
-            $sql .= '('.$this->getItemPlaceholders($c).')';
-            $sql .= $this->appendComma($c, $this->data);
+        foreach ($data as $array) {
+            $count = count($array);
+            $string = '';
+
+            for ($c = 1; $c <= $count; $c++) {
+                $string .= '('.$this->getItemPlaceholders($c).')';
+                $string .= $this->appendComma($c, $array);
+            }
+
+            $sql[] = $string;
         }
 
         return $sql;
