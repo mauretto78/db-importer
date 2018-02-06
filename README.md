@@ -32,6 +32,13 @@ $importer->execute()
 
 Please note that you must pass a [DBAL Connection](http://www.doctrine-project.org/projects/dbal.html) instance to Importer class.
 
+### Avaliable drivers
+ 
+Currently the supported drivers are:
+
+* `pdo_mysql`
+* `pdo_sqlite`
+
 ### Mapping array
 
 The mapping array is a simple key value array in which you specify the column name on your database's table and the corresponding key in the input data. Look at the following example:
@@ -105,8 +112,8 @@ Please note that there is a limit to the maximum number of records that can be i
 
 This limit is:
 
-* 4000 records for mysql driver
-* 200 records for sqlite driver
+* 4000 records for `pdo_mysql` driver
+* 200 records for `pdo_sqlite` driver
  
 ## Built With
 
