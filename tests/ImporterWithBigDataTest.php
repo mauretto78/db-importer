@@ -6,6 +6,7 @@ use DbImporter\Collections\DataCollection;
 use DbImporter\Importer;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
+use Faker\Factory;
 
 class ImporterWithBigDataTest extends BaseTestCase
 {
@@ -17,7 +18,7 @@ class ImporterWithBigDataTest extends BaseTestCase
     private $config;
 
     /**
-     * @var array
+     * @var DataCollection
      */
     private $data;
 
@@ -43,10 +44,21 @@ class ImporterWithBigDataTest extends BaseTestCase
     {
         $this->config = require __DIR__.'/../app/bootstrap.php';
 
-        $json = file_get_contents('https://jsonplaceholder.typicode.com/photos');
+        $array = [];
+        $faker = Factory::create();
+
+        for ($i = 1; $i <= 50000; $i++) {
+            $array[] = [
+                'id' => $i,
+                'albumId' => ($i+1),
+                'title' => $faker->name,
+                'url' => $faker->url,
+                'thumbnailUrl' => $faker->imageUrl()
+            ];
+        }
 
         $this->data = new DataCollection();
-        $this->data->addItems(json_decode($json, true));
+        $this->data->addItems($array);
 
         $this->mapping = [
             'id' => 'id',
@@ -68,14 +80,13 @@ class ImporterWithBigDataTest extends BaseTestCase
     }
 
     /**
-     * 5000 records
      * @test
      */
-    public function execute_the_multiple_import_query_with_mysql_driver_and_5000_records()
+    public function execute_the_multiple_import_query_with_sqlite_driver_and_50000_records()
     {
         $connection = DriverManager::getConnection(
             [
-                'url' => $this->config['mysql_url'],
+                'url' => $this->config['sqlite_url'],
             ],
             new Configuration()
         );
@@ -98,14 +109,13 @@ class ImporterWithBigDataTest extends BaseTestCase
     }
 
     /**
-     * 5000 records
      * @test
      */
-    public function execute_the_multiple_import_query_with_sqlite_driver_and_5000_records()
+    public function execute_the_multiple_import_query_with_mysql_driver_and_50000_records()
     {
         $connection = DriverManager::getConnection(
             [
-                'url' => $this->config['sqlite_url'],
+                'url' => $this->config['mysql_url'],
             ],
             new Configuration()
         );

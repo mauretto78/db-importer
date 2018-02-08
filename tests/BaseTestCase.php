@@ -20,8 +20,7 @@ abstract class BaseTestCase extends TestCase
         $tableName,
         array $keys,
         array $uniqueKeys = null
-    )
-    {
+    ) {
         $schema = new Schema();
 
         if (false === $this->checkIfTableExists($connection, $tableName)) {
@@ -31,7 +30,7 @@ abstract class BaseTestCase extends TestCase
                 $table->addColumn($key, $type);
             }
 
-            if($uniqueKeys) {
+            if ($uniqueKeys) {
                 $table->setPrimaryKey($uniqueKeys);
             }
 
@@ -57,8 +56,7 @@ abstract class BaseTestCase extends TestCase
         $tableName,
         array $keys,
         array $uniqueKeys = null
-    )
-    {
+    ) {
         $this->createSchema($connection, $tableName, $keys, $uniqueKeys);
         $this->assertInstanceOf(Importer::class, $importer);
         $this->assertTrue($importer->execute());

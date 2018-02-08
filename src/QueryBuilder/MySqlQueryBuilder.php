@@ -70,7 +70,7 @@ class MySqlQueryBuilder extends AbstractQueryBuilder
                 break;
         }
 
-        foreach ($queries as $query){
+        foreach ($queries as $query) {
             $sql[] = $this->getQueryHead().$query.$this->getQueryTail();
         }
 

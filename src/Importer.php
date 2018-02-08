@@ -186,7 +186,7 @@ class Importer
      */
     public function execute()
     {
-        switch ($this->mode){
+        switch ($this->mode) {
             case 'single':
                 return $this->executeSingleInsertQueries();
             case 'multiple':
@@ -202,12 +202,12 @@ class Importer
         $queries = $this->getQueries();
         $c = 0;
 
-        foreach ($queries as $query){
+        foreach ($queries as $query) {
             $stmt = $this->dbal->prepare($query);
             $this->bindValuesToItem($this->data->getItem($c), $stmt);
             $c++;
 
-            if(false === $stmt->execute()){
+            if (false === $stmt->execute()) {
                 return false;
             }
         }
@@ -227,7 +227,7 @@ class Importer
         $limit = $queryBuilder::MULTIPLE_QUERY_IMPORT_LIMIT;
         $start = 0;
 
-        foreach ($queries as $query){
+        foreach ($queries as $query) {
             $stmt = $this->dbal->prepare($query);
             $c = 1;
             $dataSliced = array_slice($this->data->toArray(), ($start*$limit), $limit);
@@ -237,7 +237,7 @@ class Importer
                 $c++;
             }
 
-            if(false === $stmt->execute()){
+            if (false === $stmt->execute()) {
                 return false;
             }
 
