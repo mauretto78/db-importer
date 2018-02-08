@@ -106,7 +106,7 @@ You can decide how to build insert query:
 * 'multiple' (default) - insert data in a unique multiple insert query
 * 'single' - insert data in a loop of insert queries
  
-### Maximum limit or records in multiple insert queries
+### Limit of records in multiple insert queries
  
 Please note that there is a limit to the maximum number of records that can be inserted in a single query. In case this limit is exceeded, a loop of multiple insertion queries will be executed. 
 
