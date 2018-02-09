@@ -27,9 +27,9 @@ class Importer
     ];
 
     /**
-     * Allowed modes
+     * Allowed insert modes
      */
-    const ALLOWED_MODES = [
+    const ALLOWED_INSERT_MODES = [
         'single',
         'multiple',
     ];
@@ -119,11 +119,11 @@ class Importer
      */
     private function checkMode($mode)
     {
-        if (false === in_array($mode, self::ALLOWED_MODES)) {
+        if (false === in_array($mode, self::ALLOWED_INSERT_MODES)) {
             throw new NotAllowedModeException(
                 sprintf(
                     'The mode '.$mode.' is not allowed. Drivers allowed are: [%s]',
-                    implode(',', self::ALLOWED_MODES)
+                    implode(',', self::ALLOWED_INSERT_MODES)
                 )
             );
         }
@@ -131,18 +131,19 @@ class Importer
 
     /**
      * @param $data
-     * @return mixed
+     * @return array
      * @throws NotIterableDataException
      */
     private function serialize($data)
     {
-        if(false === is_iterable($data)){
+        if (false === is_iterable($data)) {
             throw new NotIterableDataException('Data is not iterable');
         }
 
-        $encoders = [new YamlEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = new Serializer(
+            [new ObjectNormalizer()],
+            [new YamlEncoder()]
+        );
 
         return Yaml::parse($serializer->serialize($data, 'yaml'));
     }
@@ -150,9 +151,10 @@ class Importer
     /**
      * @param Connection $dbal
      * @param $table
+     * @param $mapping
+     * @param $data
      * @param $skipDuplicates
-     * @param array $mapping
-     * @param array $data
+     * @param string $mode
      * @return Importer
      */
     public static function init(
@@ -207,7 +209,7 @@ class Importer
      */
     public function execute()
     {
-        if($this->mode == 'single'){
+        if ($this->mode == 'single') {
             return $this->executeSingleInsertQueries();
         }
 

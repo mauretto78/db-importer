@@ -43,8 +43,7 @@ final class User
         $title,
         $url,
         $thumbnailUrl
-    )
-    {
+    ) {
         $this->id = $id;
         $this->albumId = $albumId;
         $this->title = $title;

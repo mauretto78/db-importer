@@ -58,7 +58,6 @@ $mapping = [
 The only requirement is the input data must be iterable (array or object). Example:
 
 ```php
-
 // as array
 $data = [
     [
