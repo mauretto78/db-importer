@@ -24,20 +24,20 @@ class SqliteQueryBuilderTest extends BaseTestCase
             [
                 'id_utente' => 1,
                 'name_utente' => 'Mauro',
-                'email_utente' => 'm.cassani@bestnetwork.it',
+                'email_utente' => 'assistenza@easy-grafica.com',
                 'username_utente' => 'mauretto78',
             ],
             [
                 'id_utente' => 2,
-                'name_utente' => 'Damian',
-                'email_utente' => 'damian@bestnetwork.it',
-                'username_utente' => 'bigfoot90',
+                'name_utente' => 'John',
+                'email_utente' => 'john@doe.com',
+                'username_utente' => 'johndoe',
             ],
             [
                 'id_utente' => 3,
-                'name_utente' => 'Matteo',
-                'email_utente' => 'm.adamo@bestnetwork.it',
-                'username_utente' => 'maffeo',
+                'name_utente' => 'Maria',
+                'email_utente' => 'maria@key.com',
+                'username_utente' => 'maria',
             ]
         ];
 

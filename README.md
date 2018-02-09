@@ -63,20 +63,20 @@ $data = [
     [
         'id_utente' => 1,
         'name_utente' => 'Mauro',
-        'email_utente' => 'm.cassani@bestnetwork.it',
+        'email_utente' => 'assistenza@easy-grafica.com',
         'username_utente' => 'mauretto78',
     ],
     [
         'id_utente' => 2,
-        'name_utente' => 'Damian',
-        'username_utente' => 'bigfoot90',
-        'email_utente' => 'damian@bestnetwork.it',
+        'name_utente' => 'John',
+        'email_utente' => 'john@doe.com',
+        'username_utente' => 'johndoe',
     ],
     [
         'id_utente' => 3,
-        'username_utente' => 'maffeo',
-        'name_utente' => 'Matteo',
-        'email_utente' => 'm.adamo@bestnetwork.it',
+        'name_utente' => 'Maria',
+        'email_utente' => 'maria@key.com',
+        'username_utente' => 'maria',
     ]
 ];
 
@@ -88,8 +88,8 @@ $data = [
 You can use as your feed data an iterable object of entities. **Getters are required**. Look at the following example:
 
 ```php
-// Photo entity
-final class Photo
+// User entity
+final class User
 {
     /**
      * @var int
@@ -97,45 +97,37 @@ final class Photo
     private $id;
 
     /**
-     * @var int
+     * @var string
      */
-    private $albumId;
+    private $name;
 
     /**
      * @var string
      */
-    private $title;
+    private $email;
 
     /**
      * @var string
      */
-    private $url;
-
-    /**
-     * @var string
-     */
-    private $thumbnailUrl;
+    private $username;
 
     /**
      * User constructor.
      * @param $id
-     * @param $albumId
-     * @param $title
-     * @param $url
-     * @param $thumbnailUrl
+     * @param $name
+     * @param $email
+     * @param $username
      */
     public function __construct(
         $id,
-        $albumId,
-        $title,
-        $url,
-        $thumbnailUrl
+        $name,
+        $email,
+        $username
     ) {
         $this->id = $id;
-        $this->albumId = $albumId;
-        $this->title = $title;
-        $this->url = $url;
-        $this->thumbnailUrl = $thumbnailUrl;
+        $this->name = $name;
+        $this->email = $email;
+        $this->username = $username;
     }
 
     /**
@@ -147,35 +139,27 @@ final class Photo
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getAlbumId()
+    public function getName()
     {
-        return $this->albumId;
+        return $this->name;
     }
 
     /**
      * @return string
      */
-    public function getTitle()
+    public function getEmail()
     {
-        return $this->title;
+        return $this->email;
     }
 
     /**
      * @return string
      */
-    public function getUrl()
+    public function getUsername()
     {
-        return $this->url;
-    }
-
-    /**
-     * @return string
-     */
-    public function getThumbnailUrl()
-    {
-        return $this->thumbnailUrl;
+        return $this->username;
     }
 }
 
@@ -184,20 +168,20 @@ $data = new ArrayCollection([
     new User(
         1,
         'Mauro',
-        'm.cassani@bestnetwork.it',
+        'assistenza@easy-grafica.com',
         'mauretto78'
     ),
     new User(
         2,
-        'Damian',
-        'damian@bestnetwork.it',
-        'bigfoot90'
+        'John',
+        'john@doe.com',
+        'johndoe'
     ), 
     new User(
         3,
-        'Matteo',
-        'm.adamo@bestnetwork.it',
-        'maffeo'
+        'Maria',
+        'maria@key.com',
+        'maria'
     )
 ]);
 
