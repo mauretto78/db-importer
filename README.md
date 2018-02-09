@@ -88,8 +88,8 @@ $data = [
 You can use as your feed data an iterable object of entities. **Getters are required**. Look at the following example:
 
 ```php
-// User entity
-final class User
+// Photo entity
+final class Photo
 {
     /**
      * @var int
