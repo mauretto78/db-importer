@@ -12,7 +12,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Statement;
 use Symfony\Component\Serializer\Encoder\YamlEncoder;
+use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
+use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Yaml\Yaml;
 
@@ -140,12 +143,7 @@ class Importer
             throw new NotIterableDataException('Data is not iterable');
         }
 
-        $serializer = new Serializer(
-            [new ObjectNormalizer()],
-            [new YamlEncoder()]
-        );
-
-        return Yaml::parse($serializer->serialize($data, 'yaml'));
+        return (new Serializer([new ObjectNormalizer()]))->normalize($data, null);
     }
 
     /**

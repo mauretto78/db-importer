@@ -31,7 +31,7 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['sqlsrv_url'],
             'single',
-            $this->createDataArray(3)
+            $this->createPhotosArray(3)
         );
     }
 
@@ -45,7 +45,7 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['mysql_url'],
             'not-allowed-insert-mode',
-            $this->createDataArray(3)
+            $this->createPhotosArray(3)
         );
     }
 
@@ -71,13 +71,13 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['sqlite_url'],
             'multiple',
-            $this->createDataArray(100)
+            $this->createPhotosArray(100)
         );
 
         $this->makeTest(
             $this->config['sqlite_url'],
             'multiple',
-            $this->createUserArray(100)
+            $this->createPhotosCollection(100)
         );
     }
 
@@ -89,13 +89,13 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['mysql_url'],
             'multiple',
-            $this->createDataArray(5000)
+            $this->createPhotosArray(5000)
         );
 
         $this->makeTest(
             $this->config['mysql_url'],
             'multiple',
-            $this->createUserArray(5000)
+            $this->createPhotosCollection(5000)
         );
     }
 
@@ -107,13 +107,13 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['sqlite_url'],
             'single',
-            $this->createDataArray(100)
+            $this->createPhotosArray(100)
         );
 
         $this->makeTest(
             $this->config['sqlite_url'],
             'single',
-            $this->createUserArray(100)
+            $this->createPhotosCollection(100)
         );
     }
 
@@ -125,13 +125,13 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['mysql_url'],
             'single',
-            $this->createDataArray(5000)
+            $this->createPhotosArray(5000)
         );
 
         $this->makeTest(
             $this->config['mysql_url'],
             'single',
-            $this->createUserArray(5000)
+            $this->createPhotosCollection(5000)
         );
     }
 

@@ -2,7 +2,7 @@
 
 namespace DbImporter\Tests\Entity;
 
-final class User
+final class Photo
 {
     /**
      * @var int

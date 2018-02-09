@@ -3,7 +3,7 @@
 namespace DbImporter\Tests;
 
 use DbImporter\Importer;
-use DbImporter\Tests\Entity\User;
+use DbImporter\Tests\Entity\Photo;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Driver\Connection;
@@ -84,7 +84,7 @@ abstract class BaseTestCase extends TestCase
      * @param $limit
      * @return array
      */
-    protected function createDataArray($limit)
+    protected function createPhotosArray($limit)
     {
         $array = [];
         $faker = Factory::create();
@@ -106,13 +106,13 @@ abstract class BaseTestCase extends TestCase
      * @param $limit
      * @return ArrayCollection
      */
-    protected function createUserArray($limit)
+    protected function createPhotosCollection($limit)
     {
         $array = [];
         $faker = Factory::create();
 
         for ($i = 1; $i <= $limit; $i++) {
-            $array[] = new User(
+            $array[] = new Photo(
                 $i,
                 ($i+1),
                 $faker->name,
