@@ -2,47 +2,61 @@
 
 namespace DbImporter\Tests;
 
-use DbImporter\Collections\DataCollection;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
 use DbImporter\QueryBuilder\SqliteQueryBuilder;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class SqliteQueryBuilderTest extends BaseTestCase
 {
+    /**
+     * @var array
+     */
+    private $data;
+
+    /**
+     * @var array
+     */
+    private $mapping;
+
+    public function setUp()
+    {
+        $this->data = [
+            [
+                'id_utente' => 1,
+                'name_utente' => 'Mauro',
+                'email_utente' => 'm.cassani@bestnetwork.it',
+                'username_utente' => 'mauretto78',
+            ],
+            [
+                'id_utente' => 2,
+                'name_utente' => 'Damian',
+                'email_utente' => 'damian@bestnetwork.it',
+                'username_utente' => 'bigfoot90',
+            ],
+            [
+                'id_utente' => 3,
+                'name_utente' => 'Matteo',
+                'email_utente' => 'm.adamo@bestnetwork.it',
+                'username_utente' => 'maffeo',
+            ]
+        ];
+
+        $this->mapping = [
+            'id' => 'id_utente',
+            'name' => 'name_utente',
+            'username' => 'username_utente',
+        ];
+    }
+
     /**
      * @test
      */
     public function it_should_returns_the_correct_multiple_insert_query()
     {
-        $data = new DataCollection();
-        $data->addItem([
-            'id_utente' => 1,
-            'name_utente' => 'Mauro',
-            'email_utente' => 'm.cassani@bestnetwork.it',
-            'username_utente' => 'mauretto78',
-        ]);
-        $data->addItem([
-            'id_utente' => 2,
-            'name_utente' => 'Damian',
-            'email_utente' => 'damian@bestnetwork.it',
-            'username_utente' => 'bigfoot90',
-        ]);
-        $data->addItem([
-            'id_utente' => 3,
-            'name_utente' => 'Matteo',
-            'email_utente' => 'm.adamo@bestnetwork.it',
-            'username_utente' => 'maffeo',
-        ]);
-
-        $mapping = [
-            'id' => 'id_utente',
-            'name' => 'name_utente',
-            'username' => 'username_utente',
-        ];
-
         $qb = new SqliteQueryBuilder(
             'example_table',
-            $mapping,
-            $data,
+            $this->mapping,
+            $this->data,
             true
         );
 
@@ -60,36 +74,10 @@ class SqliteQueryBuilderTest extends BaseTestCase
      */
     public function it_should_returns_the_correct_single_insert_query()
     {
-        $data = new DataCollection();
-        $data->addItem([
-            'id_utente' => 1,
-            'name_utente' => 'Mauro',
-            'email_utente' => 'm.cassani@bestnetwork.it',
-            'username_utente' => 'mauretto78',
-        ]);
-        $data->addItem([
-            'id_utente' => 2,
-            'name_utente' => 'Damian',
-            'email_utente' => 'damian@bestnetwork.it',
-            'username_utente' => 'bigfoot90',
-        ]);
-        $data->addItem([
-            'id_utente' => 3,
-            'name_utente' => 'Matteo',
-            'email_utente' => 'm.adamo@bestnetwork.it',
-            'username_utente' => 'maffeo',
-        ]);
-
-        $mapping = [
-            'id' => 'id_utente',
-            'name' => 'name_utente',
-            'username' => 'username_utente',
-        ];
-
         $qb = new SqliteQueryBuilder(
             'example_table',
-            $mapping,
-            $data,
+            $this->mapping,
+            $this->data,
             true
         );
 

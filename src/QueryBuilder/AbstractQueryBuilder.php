@@ -4,6 +4,7 @@ namespace DbImporter\QueryBuilder;
 
 use DbImporter\Collections\DataCollection;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 
 abstract class AbstractQueryBuilder implements QueryBuilderInterface
 {
@@ -23,7 +24,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected $mapping;
 
     /**
-     * @var DataCollection
+     * @var ArrayCollection
      */
     protected $data;
 
@@ -32,12 +33,12 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
      * @param $table
      * @param $debug
      * @param array $mapping
-     * @param DataCollection $data
+     * @param array $data
      */
     public function __construct(
         $table,
         array $mapping,
-        DataCollection $data,
+        array $data,
         $debug
     ) {
         $this->table = $table;
@@ -64,7 +65,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected function getMultipleInsertQueriesBody($limit)
     {
         $sql = [];
-        $data = array_chunk($this->data->toArray(), $limit, true);
+        $data = array_chunk($this->data, $limit, true);
 
         foreach ($data as $array) {
             $count = count($array);
@@ -87,7 +88,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected function getSingleInsertQueriesBody()
     {
         $sql = [];
-        $count = $this->data->count();
+        $count = count($this->data);
 
         for ($c = 1; $c <= $count; $c++) {
             $sql[] = '('.$this->getItemPlaceholders().')';

@@ -20,7 +20,7 @@ $importer = Importer::init(
     $connection, // your DBAL connection
     $table,      // table to import data
     $mapping,    // mapping array
-    $data,       // your data, must be an instance of `DataCollection` class.
+    $data,       // input data
     $ignore,     // ignore duplicates (boolean). True is default value
     $mode        // insert mode. 'single' or 'multiple' are the only values allowed. 'multiple' is default value
 );
@@ -50,51 +50,57 @@ $mapping = [
     'username' => 'username_utente', // 'username' is the column name on your database's table. 'username_utente' is the key in input data
     'email' => 'email_utente',       // 'email' is the column name on your database's table. 'email_utente' is the key in input data
 ];
+
 ```
 
 ### Data
 
-The input data must be an instance of `DataCollection` class. You can add one item at a time or add items array in bulk: 
+The only requirement is the input data must be iterable (array or object). Example:
 
 ```php
-use DbImporter\Collections\DataCollection;
 
-$data = new DataCollection();
-
-// add one item at a time
-$data->addItem([
-    'id_utente' => 1,
-    'name_utente' => 'Mauro',
-    'email_utente' => 'm.cassani@bestnetwork.it',
-    'username_utente' => 'mauretto78',
-]);
-$data->addItem([
-    'id_utente' => 2,
-    'name_utente' => 'Damian',
-    'username_utente' => 'bigfoot90',
-    'email_utente' => 'damian@bestnetwork.it',
-]);
-$data->addItem([
-    'id_utente' => 3,
-    'username_utente' => 'maffeo',
-    'name_utente' => 'Matteo',
-    'email_utente' => 'm.adamo@bestnetwork.it',
-]);
-
-// add items array in bulk
-$data->addItems([
+// as array
+$data = [
     [
-        'id' => 4,
-        'name' => 'Roberto',
-        'email' => 'r.curti@bestnetwork.it',
-        'username' => 'rebberto',
+        'id_utente' => 1,
+        'name_utente' => 'Mauro',
+        'email_utente' => 'm.cassani@bestnetwork.it',
+        'username_utente' => 'mauretto78',
     ],
     [
-        'id' => 5,
-        'name' => 'Nicola',
-        'email' => 'n.muzi@bestnetwork.it',
-        'username' => 'nicola',
+        'id_utente' => 2,
+        'name_utente' => 'Damian',
+        'username_utente' => 'bigfoot90',
+        'email_utente' => 'damian@bestnetwork.it',
+    ],
+    [
+        'id_utente' => 3,
+        'username_utente' => 'maffeo',
+        'name_utente' => 'Matteo',
+        'email_utente' => 'm.adamo@bestnetwork.it',
     ]
+];
+
+// as an instance of Doctrine ArrayCollection
+$data = new ArrayCollection([
+    new User(
+        1,
+        'Mauro',
+        'm.cassani@bestnetwork.it',
+        'mauretto78'
+    ),
+    new User(
+        2,
+        'Damian',
+        'damian@bestnetwork.it',
+        'bigfoot90'
+    ), 
+    new User(
+        3,
+        'Matteo',
+        'm.adamo@bestnetwork.it',
+        'maffeo'
+    )
 ]);
 
 ```

@@ -2,14 +2,11 @@
 
 namespace DbImporter\Tests;
 
-use DbImporter\Collections\DataCollection;
 use DbImporter\Importer;
-use Doctrine\DBAL\Configuration;
-use Doctrine\DBAL\DriverManager;
 
 class ImporterTest extends BaseTestCase
 {
-    const TABLE_NAME = 'example_table';
+    const TABLE_NAME = 'photos_table';
 
     /**
      * @var array
@@ -17,67 +14,11 @@ class ImporterTest extends BaseTestCase
     private $config;
 
     /**
-     * @var array
-     */
-    private $data;
-
-    /**
-     * @var array
-     */
-    private $mapping;
-
-    /**
-     * @var array
-     */
-    private $keys;
-
-    /**
-     * @var array
-     */
-    private $uniqueKeys;
-
-    /**
      * setUp
      */
     public function setUp()
     {
         $this->config = require __DIR__.'/../app/bootstrap.php';
-
-        $this->data = new DataCollection();
-        $this->data->addItem([
-            'id_utente' => 1,
-            'name_utente' => 'Mauro',
-            'email_utente' => 'm.cassani@bestnetwork.it',
-            'username_utente' => 'mauretto78',
-        ]);
-        $this->data->addItem([
-            'id_utente' => 2,
-            'name_utente' => 'Damian',
-            'username_utente' => 'bigfoot90',
-            'email_utente' => 'damian@bestnetwork.it',
-        ]);
-        $this->data->addItem([
-            'id_utente' => 3,
-            'username_utente' => 'maffeo',
-            'name_utente' => 'Matteo',
-            'email_utente' => 'm.adamo@bestnetwork.it',
-        ]);
-
-        $this->mapping = [
-            'id' => 'id_utente',
-            'name' => 'name_utente',
-            'username' => 'username_utente',
-            'email' => 'email_utente',
-        ];
-
-        $this->keys = [
-            'id' => 'integer',
-            'name' => 'string',
-            'email' => 'string',
-            'username' => 'string',
-        ];
-
-        $this->uniqueKeys = ['id'];
     }
 
     /**
@@ -87,19 +28,10 @@ class ImporterTest extends BaseTestCase
      */
     public function it_throws_NotAllowedDriverException_if_a_not_yet_supported_driver_is_provided()
     {
-        $connection = DriverManager::getConnection(
-            [
-                'url' => $this->config['sqlsrv_url'],
-            ],
-            new Configuration()
-        );
-
-        Importer::init(
-            $connection,
-            self::TABLE_NAME,
-            $this->mapping,
-            $this->data,
-            true
+        $this->makeTest(
+            $this->config['sqlsrv_url'],
+            'single',
+            $this->createDataArray(3)
         );
     }
 
@@ -110,49 +42,24 @@ class ImporterTest extends BaseTestCase
      */
     public function it_throws_NotAllowedModeException_if_a_not_yet_supported_driver_is_provided()
     {
-        $connection = DriverManager::getConnection(
-            [
-                'url' => $this->config['mysql_url'],
-            ],
-            new Configuration()
-        );
-
-        Importer::init(
-            $connection,
-            self::TABLE_NAME,
-            $this->mapping,
-            $this->data,
-            true,
-            'not-allowed-insert-mode'
+        $this->makeTest(
+            $this->config['mysql_url'],
+            'not-allowed-insert-mode',
+            $this->createDataArray(3)
         );
     }
 
     /**
      * @test
+     * @expectedException \DbImporter\Exceptions\NotIterableDataException
+     * @expectedExceptionMessage Data is not iterable
      */
-    public function execute_the_multiple_import_query_with_mysql_driver()
+    public function it_throws_NotIterableDataException_if_data_provided_is_not_iterable()
     {
-        $connection = DriverManager::getConnection(
-            [
-                'url' => $this->config['mysql_url'],
-            ],
-            new Configuration()
-        );
-
-        $importer = Importer::init(
-            $connection,
-            self::TABLE_NAME,
-            $this->mapping,
-            $this->data,
-            true
-        );
-
-        $this->executeQueryAndPerformTests(
-            $importer,
-            $connection,
-            self::TABLE_NAME,
-            $this->keys,
-            $this->uniqueKeys
+        $this->makeTest(
+            $this->config['mysql_url'],
+            'single',
+            'string'
         );
     }
 
@@ -161,57 +68,34 @@ class ImporterTest extends BaseTestCase
      */
     public function execute_the_multiple_import_query_with_sqlite_driver()
     {
-        $connection = DriverManager::getConnection(
-            [
-                'url' => $this->config['sqlite_url'],
-            ],
-            new Configuration()
+        $this->makeTest(
+            $this->config['sqlite_url'],
+            'multiple',
+            $this->createDataArray(100)
         );
 
-        $importer = Importer::init(
-            $connection,
-            self::TABLE_NAME,
-            $this->mapping,
-            $this->data,
-            true
-        );
-
-        $this->executeQueryAndPerformTests(
-            $importer,
-            $connection,
-            self::TABLE_NAME,
-            $this->keys,
-            $this->uniqueKeys
+        $this->makeTest(
+            $this->config['sqlite_url'],
+            'multiple',
+            $this->createUserArray(100)
         );
     }
 
     /**
      * @test
      */
-    public function execute_the_single_import_query_with_mysql_driver()
+    public function execute_the_multiple_import_query_with_mysql_driver()
     {
-        $connection = DriverManager::getConnection(
-            [
-                'url' => $this->config['mysql_url'],
-            ],
-            new Configuration()
+        $this->makeTest(
+            $this->config['mysql_url'],
+            'multiple',
+            $this->createDataArray(5000)
         );
 
-        $importer = Importer::init(
-            $connection,
-            self::TABLE_NAME,
-            $this->mapping,
-            $this->data,
-            true,
-            'single'
-        );
-
-        $this->executeQueryAndPerformTests(
-            $importer,
-            $connection,
-            self::TABLE_NAME,
-            $this->keys,
-            $this->uniqueKeys
+        $this->makeTest(
+            $this->config['mysql_url'],
+            'multiple',
+            $this->createUserArray(5000)
         );
     }
 
@@ -220,28 +104,79 @@ class ImporterTest extends BaseTestCase
      */
     public function execute_the_single_import_query_with_sqlite_driver()
     {
-        $connection = DriverManager::getConnection(
-            [
-                'url' => $this->config['sqlite_url'],
-            ],
-            new Configuration()
+        $this->makeTest(
+            $this->config['sqlite_url'],
+            'single',
+            $this->createDataArray(100)
         );
+
+        $this->makeTest(
+            $this->config['sqlite_url'],
+            'single',
+            $this->createUserArray(100)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function execute_the_single_import_query_with_mysql_driver()
+    {
+        $this->makeTest(
+            $this->config['mysql_url'],
+            'single',
+            $this->createDataArray(5000)
+        );
+
+        $this->makeTest(
+            $this->config['mysql_url'],
+            'single',
+            $this->createUserArray(5000)
+        );
+    }
+
+    /**
+     * @param $url
+     * @param $mode
+     * @param $data
+     */
+    private function makeTest($url, $mode, $data)
+    {
+        $connection = $this->getConnection($url);
+
+        $mapping = [
+            'id' => 'id',
+            'album_id' => 'albumId',
+            'titolo' => 'title',
+            'url' => 'url',
+            'thumbnail_url' => 'thumbnailUrl',
+        ];
+
+        $keys = [
+            'id' => 'integer',
+            'album_id' => 'integer',
+            'titolo' => 'string',
+            'url' => 'string',
+            'thumbnail_url' => 'string',
+        ];
+
+        $uniqueKeys = ['id'];
 
         $importer = Importer::init(
             $connection,
             self::TABLE_NAME,
-            $this->mapping,
-            $this->data,
+            $mapping,
+            $data,
             true,
-            'single'
+            $mode
         );
 
-        $this->executeQueryAndPerformTests(
+        $this->executeImportQueryAndPerformTests(
             $importer,
             $connection,
             self::TABLE_NAME,
-            $this->keys,
-            $this->uniqueKeys
+            $keys,
+            $uniqueKeys
         );
     }
 }

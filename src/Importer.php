@@ -2,14 +2,19 @@
 
 namespace DbImporter;
 
-use DbImporter\Collections\DataCollection;
 use DbImporter\Exceptions\NotAllowedDriverException;
 use DbImporter\Exceptions\NotAllowedModeException;
+use DbImporter\Exceptions\NotIterableDataException;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
 use DbImporter\QueryBuilder\MySqlQueryBuilder;
 use DbImporter\QueryBuilder\SqliteQueryBuilder;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Statement;
+use Symfony\Component\Serializer\Encoder\YamlEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Yaml\Yaml;
 
 class Importer
 {
@@ -55,7 +60,7 @@ class Importer
     private $mapping;
 
     /**
-     * @var DataCollection
+     * @var ArrayCollection
      */
     private $data;
 
@@ -69,15 +74,15 @@ class Importer
      * @param Connection $dbal
      * @param $table
      * @param array $mapping
-     * @param DataCollection $data
+     * @param array $data
      * @param $skipDuplicates
      * @param string $mode
      */
     private function __construct(
         Connection $dbal,
         $table,
-        array $mapping,
-        DataCollection $data,
+        $mapping,
+        $data,
         $skipDuplicates,
         $mode = 'multiple'
     ) {
@@ -87,7 +92,7 @@ class Importer
         $this->driver = $driver;
         $this->table = $table;
         $this->mapping = $mapping;
-        $this->data = $data;
+        $this->data = $this->serialize($data);
         $this->skipDuplicates = $skipDuplicates;
         $this->mode = $mode;
     }
@@ -101,8 +106,7 @@ class Importer
         if (false === in_array($driver, self::ALLOWED_DRIVERS)) {
             throw new NotAllowedDriverException(
                 sprintf(
-                    'The driver %s is not allowed. Drivers allowed are: [%s]',
-                    $driver,
+                    'The driver '.$driver.' is not allowed. Drivers allowed are: [%s]',
                     implode(',', self::ALLOWED_DRIVERS)
                 )
             );
@@ -118,8 +122,7 @@ class Importer
         if (false === in_array($mode, self::ALLOWED_MODES)) {
             throw new NotAllowedModeException(
                 sprintf(
-                    'The mode %s is not allowed. Drivers allowed are: [%s]',
-                    $mode,
+                    'The mode '.$mode.' is not allowed. Drivers allowed are: [%s]',
                     implode(',', self::ALLOWED_MODES)
                 )
             );
@@ -127,18 +130,36 @@ class Importer
     }
 
     /**
+     * @param $data
+     * @return mixed
+     * @throws NotIterableDataException
+     */
+    private function serialize($data)
+    {
+        if(false === is_iterable($data)){
+            throw new NotIterableDataException('Data is not iterable');
+        }
+
+        $encoders = [new YamlEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+
+        return Yaml::parse($serializer->serialize($data, 'yaml'));
+    }
+
+    /**
      * @param Connection $dbal
      * @param $table
      * @param $skipDuplicates
      * @param array $mapping
-     * @param DataCollection $data
+     * @param array $data
      * @return Importer
      */
     public static function init(
         Connection $dbal,
         $table,
-        array $mapping,
-        DataCollection $data,
+        $mapping,
+        $data,
         $skipDuplicates,
         $mode = 'multiple'
     ) {
@@ -153,7 +174,7 @@ class Importer
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getQueries()
     {
@@ -186,12 +207,11 @@ class Importer
      */
     public function execute()
     {
-        switch ($this->mode) {
-            case 'single':
-                return $this->executeSingleInsertQueries();
-            case 'multiple':
-                return $this->executeMultipleInsertQuery();
+        if($this->mode == 'single'){
+            return $this->executeSingleInsertQueries();
         }
+
+        return $this->executeMultipleInsertQuery();
     }
 
     /**
@@ -204,7 +224,7 @@ class Importer
 
         foreach ($queries as $query) {
             $stmt = $this->dbal->prepare($query);
-            $this->bindValuesToItem($this->data->getItem($c), $stmt);
+            $this->bindValuesToItem($this->data[$c], $stmt);
             $c++;
 
             if (false === $stmt->execute()) {
@@ -230,7 +250,7 @@ class Importer
         foreach ($queries as $query) {
             $stmt = $this->dbal->prepare($query);
             $c = 1;
-            $dataSliced = array_slice($this->data->toArray(), ($start*$limit), $limit);
+            $dataSliced = array_slice($this->data, ($start*$limit), $limit);
 
             foreach ($dataSliced as $item) {
                 $this->bindValuesToItem($item, $stmt, $c);
