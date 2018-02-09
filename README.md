@@ -55,10 +55,10 @@ $mapping = [
 
 ### Data
 
-The only requirement is the input data must be iterable (array or object). Example:
+The only requirement is the input data must be iterable (array or object). Here's the most simple example:
 
 ```php
-// as array
+// as simple associative array
 $data = [
     [
         'id_utente' => 1,
@@ -80,7 +80,106 @@ $data = [
     ]
 ];
 
-// as an instance of Doctrine ArrayCollection
+//..
+```
+
+#### Working with Entities
+
+You can use as your feed data an iterable object of entities. **Getters are required**. Look at the following example:
+
+```php
+// User entity
+final class User
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var int
+     */
+    private $albumId;
+
+    /**
+     * @var string
+     */
+    private $title;
+
+    /**
+     * @var string
+     */
+    private $url;
+
+    /**
+     * @var string
+     */
+    private $thumbnailUrl;
+
+    /**
+     * User constructor.
+     * @param $id
+     * @param $albumId
+     * @param $title
+     * @param $url
+     * @param $thumbnailUrl
+     */
+    public function __construct(
+        $id,
+        $albumId,
+        $title,
+        $url,
+        $thumbnailUrl
+    ) {
+        $this->id = $id;
+        $this->albumId = $albumId;
+        $this->title = $title;
+        $this->url = $url;
+        $this->thumbnailUrl = $thumbnailUrl;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAlbumId()
+    {
+        return $this->albumId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getThumbnailUrl()
+    {
+        return $this->thumbnailUrl;
+    }
+}
+
+// use Doctrine\ArrayCollection as feed of Importer
 $data = new ArrayCollection([
     new User(
         1,
@@ -102,7 +201,9 @@ $data = new ArrayCollection([
     )
 ]);
 
+//..
 ```
+
 
 ### Insert Mode (multiple or single)
 
