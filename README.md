@@ -25,7 +25,7 @@ $importer = Importer::init(
     $mode        // insert mode. 'single' or 'multiple' are the only values allowed. 'multiple' is default value
 );
 
-// Execute import query
+// execute import query
 $importer->execute()
 
 ```
