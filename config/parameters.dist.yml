@@ -1,3 +1,4 @@
 mysql_url: 'mysql://root:root@127.0.0.1:3306/sql_importer'
+pgsql_url: 'pgsql://127.0.0.1:5432/sql_importer'
 sqlite_url: 'sqlite:/db/sql_importer.sqlite'
 sqlsrv_url: 'sqlsrv://root:root@127.0.0.1:3306/sql_importer'

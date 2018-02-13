@@ -7,6 +7,7 @@ use DbImporter\Exceptions\NotAllowedModeException;
 use DbImporter\Exceptions\NotIterableDataException;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
 use DbImporter\QueryBuilder\MySqlQueryBuilder;
+use DbImporter\QueryBuilder\PgSqlQueryBuilder;
 use DbImporter\QueryBuilder\SqliteQueryBuilder;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
@@ -26,6 +27,7 @@ class Importer
      */
     const ALLOWED_DRIVERS = [
         'pdo_mysql',
+        'pdo_pgsql',
         'pdo_sqlite',
     ];
 
@@ -55,7 +57,7 @@ class Importer
     /**
      * @var bool
      */
-    private $skipDuplicates;
+    private $ignoreErrors;
 
     /**
      * @var array
@@ -96,7 +98,7 @@ class Importer
         $this->table = $table;
         $this->mapping = $mapping;
         $this->data = $this->serialize($data);
-        $this->skipDuplicates = $skipDuplicates;
+        $this->ignoreErrors = $skipDuplicates;
         $this->mode = $mode;
     }
 
@@ -184,7 +186,7 @@ class Importer
             $this->table,
             $this->mapping,
             $this->data,
-            $this->skipDuplicates
+            $this->ignoreErrors
         ))->getQueries($this->mode);
     }
 
@@ -196,6 +198,9 @@ class Importer
         switch ($this->driver) {
             case 'pdo_mysql':
                 return MySqlQueryBuilder::class;
+
+            case 'pdo_pgsql':
+                return PgSqlQueryBuilder::class;
 
             case 'pdo_sqlite':
                 return SqliteQueryBuilder::class;

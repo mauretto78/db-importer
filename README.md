@@ -21,7 +21,7 @@ $importer = Importer::init(
     $table,      // table to import data
     $mapping,    // mapping array
     $data,       // input data
-    $ignore,     // ignore duplicates (boolean). True is default value
+    $ignoreErr,  // ignore errors (boolean). True is default value
     $mode        // insert mode. 'single' or 'multiple' are the only values allowed. 'multiple' is default value
 );
 
@@ -36,8 +36,9 @@ Please note that you must pass a [DBAL Connection](http://www.doctrine-project.o
  
 Currently the supported drivers are:
 
-* `pdo_mysql`
-* `pdo_sqlite`
+* `pdo_mysql` (MySQL)
+* `pdo_pgsql` (PostgreSQL)
+* `pdo_sqlite` (Sqlite)
 
 ### Mapping array
 
@@ -188,7 +189,6 @@ $data = new ArrayCollection([
 //..
 ```
 
-
 ### Insert Mode (multiple or single)
 
 You can decide how to build insert query:
@@ -203,6 +203,7 @@ Please note that there is a limit to the maximum number of records that can be i
 This limit is:
 
 * 4000 records for `pdo_mysql` driver
+* 4000 records for `pdo_pgsql` driver
 * 200 records for `pdo_sqlite` driver
  
 ## Built With

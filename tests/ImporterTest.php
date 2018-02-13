@@ -24,7 +24,7 @@ class ImporterTest extends BaseTestCase
     /**
      * @test
      * @expectedException \DbImporter\Exceptions\NotAllowedDriverException
-     * @expectedExceptionMessage The driver sqlsrv is not allowed. Drivers allowed are: [pdo_mysql,pdo_sqlite]
+     * @expectedExceptionMessage The driver sqlsrv is not allowed. Drivers allowed are: [pdo_mysql,pdo_pgsql,pdo_sqlite]
      */
     public function it_throws_NotAllowedDriverException_if_a_not_yet_supported_driver_is_provided()
     {
@@ -66,24 +66,6 @@ class ImporterTest extends BaseTestCase
     /**
      * @test
      */
-    public function execute_the_multiple_import_query_with_sqlite_driver()
-    {
-        $this->makeTest(
-            $this->config['sqlite_url'],
-            'multiple',
-            $this->createPhotosArray(100)
-        );
-
-        $this->makeTest(
-            $this->config['sqlite_url'],
-            'multiple',
-            $this->createPhotosCollection(100)
-        );
-    }
-
-    /**
-     * @test
-     */
     public function execute_the_multiple_import_query_with_mysql_driver()
     {
         $this->makeTest(
@@ -102,17 +84,35 @@ class ImporterTest extends BaseTestCase
     /**
      * @test
      */
-    public function execute_the_single_import_query_with_sqlite_driver()
+    public function execute_the_multiple_import_query_with_pgsql_driver()
+    {
+        $this->makeTest(
+            $this->config['pgsql_url'],
+            'multiple',
+            $this->createPhotosArray(5000)
+        );
+
+        $this->makeTest(
+            $this->config['pgsql_url'],
+            'multiple',
+            $this->createPhotosCollection(5000)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function execute_the_multiple_import_query_with_sqlite_driver()
     {
         $this->makeTest(
             $this->config['sqlite_url'],
-            'single',
+            'multiple',
             $this->createPhotosArray(100)
         );
 
         $this->makeTest(
             $this->config['sqlite_url'],
-            'single',
+            'multiple',
             $this->createPhotosCollection(100)
         );
     }
@@ -132,6 +132,42 @@ class ImporterTest extends BaseTestCase
             $this->config['mysql_url'],
             'single',
             $this->createPhotosCollection(5000)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function execute_the_single_import_query_with_pgsql_driver()
+    {
+        $this->makeTest(
+            $this->config['pgsql_url'],
+            'single',
+            $this->createPhotosArray(5000)
+        );
+
+        $this->makeTest(
+            $this->config['pgsql_url'],
+            'single',
+            $this->createPhotosCollection(5000)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function execute_the_single_import_query_with_sqlite_driver()
+    {
+        $this->makeTest(
+            $this->config['sqlite_url'],
+            'single',
+            $this->createPhotosArray(100)
+        );
+
+        $this->makeTest(
+            $this->config['sqlite_url'],
+            'single',
+            $this->createPhotosCollection(100)
         );
     }
 
