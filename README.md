@@ -210,6 +210,12 @@ This limit is:
 
 * [DBAL](http://www.doctrine-project.org/projects/dbal.html) - Database Abstraction Layer
 
+## Requirements
+
+* PHP 7.1+
+* MySQL 5.7+
+* PostgreSQL 9.5+
+
 ## Support
 
 If you found an issue or had an idea please refer [to this section](https://github.com/mauretto78/db-importer/issues).
