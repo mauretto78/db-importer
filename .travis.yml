@@ -18,11 +18,11 @@ before_install:
   - echo "USE mysql;\nUPDATE user SET password=PASSWORD('travis') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
 
 before_script:
-  - psql -c 'create database sql_importer;'
   - cp config/parameters.travis.yml config/parameters.yml
   - cp db/sql_importer.travis.sqlite db/sql_importer.sqlite
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
+  - psql -c 'create database travis;' -U postgres
 
 script:
   - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
