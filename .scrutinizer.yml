@@ -2,6 +2,8 @@ build:
   dependencies:
     before:
       - cp config/parameters.scrutinizer.yml config/parameters.yml
+  environment:
+    postgresql: '9.5'
   nodes:
     analysis:
       project_setup:
