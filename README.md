@@ -1,5 +1,6 @@
 # Db-Importer
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mauretto78/db-importer/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mauretto78/db-importer/?branch=master)
 [![Build Status](https://travis-ci.org/mauretto78/db-importer.svg?branch=master)](https://travis-ci.org/mauretto78/db-importer)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/61444b8259e642f990965fc843283ad7)](https://www.codacy.com/app/mauretto78/db-importer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mauretto78/db-importer&amp;utm_campaign=Badge_Grade)
 [![Coverage Status](https://coveralls.io/repos/github/mauretto78/db-importer/badge.svg?branch=master)](https://coveralls.io/github/mauretto78/db-importer?branch=master)

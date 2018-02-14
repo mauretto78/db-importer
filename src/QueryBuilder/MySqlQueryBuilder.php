@@ -68,20 +68,23 @@ class MySqlQueryBuilder extends AbstractQueryBuilder
     {
         $sql = [];
 
-        switch ($mode) {
-            case 'multiple':
-                $queries = $this->getMultipleInsertQueriesBody(self::MULTIPLE_QUERY_IMPORT_LIMIT);
-                break;
-
-            case 'single':
-                $queries = $this->getSingleInsertQueriesBody();
-                break;
-        }
-
-        foreach ($queries as $query) {
+        foreach ($this->getQueriesBody($mode) as $query) {
             $sql[] = $this->getQueryHead().$query.$this->getQueryTail();
         }
 
         return $sql;
+    }
+
+    /**
+     * @param $mode
+     * @return array
+     */
+    private function getQueriesBody($mode)
+    {
+        if($mode == 'multiple'){
+            return $this->getMultipleInsertQueriesBody(self::MULTIPLE_QUERY_IMPORT_LIMIT);
+        }
+
+        return $this->getSingleInsertQueriesBody();;
     }
 }

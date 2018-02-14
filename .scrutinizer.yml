@@ -1,16 +1,23 @@
 build:
-    environment:
-        php: '7.1'
+  nodes:
+    analysis:
+      resources:
+        cpus: 4
+      project_setup:
+        override: true
+      tests:
+        override:
+          - php-scrutinizer-run --enable-security-analysis
 
 filter:
-    excluded_paths:
-        - 'build/*'
-        - 'vendor/*'
+  excluded_paths:
+    - 'build/*'
+    - 'vendor/*'
 
 checks:
-    php: true
+  php: true
 coding_style:
-    php:
-        spaces:
-            around_operators:
-                additive: false
+  php:
+    spaces:
+      around_operators:
+        additive: false
