@@ -1,0 +1,16 @@
+build:
+    environment:
+        php: '7.1'
+
+filter:
+    excluded_paths:
+        - 'build/*'
+        - 'vendor/*'
+
+checks:
+    php: true
+coding_style:
+    php:
+        spaces:
+            around_operators:
+                additive: false
