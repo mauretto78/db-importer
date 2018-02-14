@@ -1,3 +1,6 @@
+before_commands:
+    - 'cp config/parameters.scrutinizer.yml config/parameters.yml'
+
 build:
   nodes:
     analysis:
