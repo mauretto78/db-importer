@@ -72,7 +72,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
      */
     protected function getQueriesBody($mode, $limit)
     {
-        if($mode == 'multiple'){
+        if ($mode == 'multiple') {
             return $this->getMultipleInsertQueriesBody($limit);
         }
 
