@@ -14,7 +14,7 @@ use DbImporter\Importer;
 use DbImporter\Tests\Entity\Photo;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Configuration;
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Schema\Schema;
 use Faker\Factory;
@@ -43,6 +43,9 @@ abstract class BaseTestCase extends TestCase
 
     /**
      * @param Connection $connection
+     * @param $tableName
+     * @param array $keys
+     * @param array|null $uniqueKeys
      */
     protected function createSchema(
         Connection $connection,
@@ -145,7 +148,7 @@ abstract class BaseTestCase extends TestCase
 
     /**
      * @param $url
-     * @return \Doctrine\DBAL\Connection
+     * @return Connection
      */
     protected function getConnection($url)
     {
