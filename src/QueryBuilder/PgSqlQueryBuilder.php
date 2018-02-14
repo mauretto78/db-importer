@@ -64,7 +64,6 @@ class PgSqlQueryBuilder extends AbstractQueryBuilder
         }
 
         foreach ($queries as $query) {
-
             $sqlString = $this->getQueryHead().$query;
 
             if (true === $this->debug) {
