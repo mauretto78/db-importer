@@ -1,10 +1,19 @@
 <?php
+/**
+ * This file is part of the DbImporter package.
+ *
+ * (c) Mauro Cassani<https://github.com/mauretto78>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace DbImporter;
 
 use DbImporter\Exceptions\NotAllowedDriverException;
 use DbImporter\Exceptions\NotAllowedModeException;
 use DbImporter\Exceptions\NotIterableDataException;
+use DbImporter\Normalizer\StdClassNormalizer;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
 use DbImporter\QueryBuilder\MySqlQueryBuilder;
 use DbImporter\QueryBuilder\PgSqlQueryBuilder;
@@ -12,13 +21,8 @@ use DbImporter\QueryBuilder\SqliteQueryBuilder;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Statement;
-use Symfony\Component\Serializer\Encoder\YamlEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
-use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Yaml\Yaml;
 
 class Importer
 {
@@ -97,7 +101,7 @@ class Importer
         $this->driver = $driver;
         $this->table = $table;
         $this->mapping = $mapping;
-        $this->data = $this->serialize($data);
+        $this->data = $this->normalize($data);
         $this->ignoreErrors = $skipDuplicates;
         $this->mode = $mode;
     }
@@ -139,13 +143,18 @@ class Importer
      * @return array
      * @throws NotIterableDataException
      */
-    private function serialize($data)
+    private function normalize($data)
     {
         if (false === is_iterable($data)) {
             throw new NotIterableDataException('Data is not iterable');
         }
 
-        return (new Serializer([new ObjectNormalizer()]))->normalize($data, null);
+        $serializer = new Serializer([
+            new StdClassNormalizer(),
+            new ObjectNormalizer()
+        ]);
+
+        return $serializer->normalize($data);
     }
 
     /**
@@ -216,7 +225,7 @@ class Importer
             return $this->executeSingleInsertQueries();
         }
 
-        return $this->executeMultipleInsertQuery();
+        return $this->executeMultipleInsertQueries();
     }
 
     /**
@@ -243,7 +252,7 @@ class Importer
     /**
      * @return bool
      */
-    private function executeMultipleInsertQuery()
+    private function executeMultipleInsertQueries()
     {
         $queries = $this->getQueries();
 

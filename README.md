@@ -212,7 +212,7 @@ This limit is:
 
 ## Requirements
 
-* PHP 7.1+
+* PHP 5.6+
 * MySQL 5.7+
 * PostgreSQL 9.5+
 

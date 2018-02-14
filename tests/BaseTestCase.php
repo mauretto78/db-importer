@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the DbImporter package.
+ *
+ * (c) Mauro Cassani<https://github.com/mauretto78>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace DbImporter\Tests;
 
@@ -122,6 +130,17 @@ abstract class BaseTestCase extends TestCase
         }
 
         return new ArrayCollection($array);
+    }
+
+    /**
+     * @param $limit
+     * @return array
+     */
+    public function createPhotosStdClassArray($limit)
+    {
+        $url = 'https://jsonplaceholder.typicode.com/photos';
+
+        return array_slice(json_decode(file_get_contents($url)), 0, $limit);
     }
 
     /**
