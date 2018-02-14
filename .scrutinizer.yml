@@ -6,7 +6,7 @@ build:
   project_setup:
     before:
       - mysql -e 'CREATE DATABASE scrutinizer'
-      - psql -c 'pg_upgrade;' -U postgres
+      - psql -c 'pg_upgrade;' -U scrutinizer
   environment:
     mysql: 5.6
     postgresql: true
