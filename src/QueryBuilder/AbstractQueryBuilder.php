@@ -105,6 +105,19 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * @param $mode
+     * @return array
+     */
+    protected function getQueriesBody($mode)
+    {
+        if($mode == 'multiple'){
+            return $this->getMultipleInsertQueriesBody(self::MULTIPLE_QUERY_IMPORT_LIMIT);
+        }
+
+        return $this->getSingleInsertQueriesBody();;
+    }
+
+    /**
      * @param $index
      * @return string
      */

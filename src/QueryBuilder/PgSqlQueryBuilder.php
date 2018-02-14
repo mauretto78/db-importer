@@ -53,17 +53,7 @@ class PgSqlQueryBuilder extends AbstractQueryBuilder
     {
         $sql = [];
 
-        switch ($mode) {
-            case 'multiple':
-                $queries = $this->getMultipleInsertQueriesBody(self::MULTIPLE_QUERY_IMPORT_LIMIT);
-                break;
-
-            case 'single':
-                $queries = $this->getSingleInsertQueriesBody();
-                break;
-        }
-
-        foreach ($queries as $query) {
+        foreach ($this->getQueriesBody($mode) as $query) {
             $sqlString = $this->getQueryHead().$query;
 
             if (true === $this->debug) {
