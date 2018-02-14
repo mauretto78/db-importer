@@ -2,6 +2,7 @@ build:
   dependencies:
     before:
       - cp config/parameters.scrutinizer.yml config/parameters.yml
+      - cp db/sql_importer.travis.sqlite db/sql_importer.sqlite
   environment:
     mysql: 5.6
     postgresql: true

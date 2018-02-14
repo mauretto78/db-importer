@@ -1,4 +1,4 @@
-mysql_url: 'mysql://scrutinizer:scrutinizer@127.0.0.1:3306/scrutinizer'
+mysql_url: 'mysql://root@127.0.0.1:3306/scrutinizer'
 pgsql_url: 'pgsql://scrutinizer:scrutinizer@127.0.0.1:5432/scrutinizer'
 sqlite_url: 'sqlite:/db/sql_importer.sqlite'
 sqlsrv_url: 'sqlsrv://root:root@127.0.0.1:3306/sql_importer'
