@@ -6,6 +6,7 @@ build:
   project_setup:
     before:
       - mysql -e "CREATE DATABASE scrutinizer"
+      - psql -c 'pg_upgrade;' -U postgres
   environment:
     mysql: 5.6
     postgresql: true
@@ -16,6 +17,7 @@ build:
       tests:
         override:
           - php-scrutinizer-run --enable-security-analysis
+          - idle_timeout: 300
           -
             command: 'vendor/bin/phpunit --coverage-clover=build/coverage/coverage-clover-file'
             coverage:
