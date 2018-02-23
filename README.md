@@ -206,6 +206,25 @@ This limit is:
 * 4000 records for `pdo_pgsql` driver
 * 200 records for `pdo_sqlite` driver
  
+### Create Schema
+
+If you need to create table scheme, use `createSchema()` method. Do the following:
+
+```php
+$keys = [
+    'id' => 'integer',
+    'album_id' => 'integer',
+    'titolo' => 'string',
+    'url' => 'string',
+    'thumbnail_url' => 'string',
+];
+
+$uniqueKeys = ['id'];
+$indexKeys = ['album_id', 'titolo'];
+
+$importer->createSchema($keys, $uniqueKeys, $indexKeys);
+```
+ 
 ## Built With
 
 * [DBAL](http://www.doctrine-project.org/projects/dbal.html) - Database Abstraction Layer

@@ -36,7 +36,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected $data;
 
     /**
-     * MySqlQueryBuilderTest constructor.
+     * MysqlQueryBuilderTest constructor.
      * @param $table
      * @param $debug
      * @param array $mapping

@@ -16,7 +16,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Schema\Schema;
 use Faker\Factory;
 use PHPUnit\Framework\TestCase;
 
@@ -24,71 +23,17 @@ abstract class BaseTestCase extends TestCase
 {
     /**
      * @param Importer $importer
-     * @param Connection $connection
-     * @param $tableName
      * @param array $keys
      * @param array|null $uniqueKeys
      */
     protected function executeImportQueryAndPerformTests(
         Importer $importer,
-        Connection $connection,
-        $tableName,
         array $keys,
         array $uniqueKeys = null
     ) {
-        $this->createSchema($connection, $tableName, $keys, $uniqueKeys);
+        $importer->createSchema($keys, $uniqueKeys);
         $this->assertInstanceOf(Importer::class, $importer);
         $this->assertTrue($importer->execute());
-    }
-
-    /**
-     * @param Connection $connection
-     * @param $tableName
-     * @param array $keys
-     * @param array|null $uniqueKeys
-     */
-    protected function createSchema(
-        Connection $connection,
-        $tableName,
-        array $keys,
-        array $uniqueKeys = null
-    ) {
-        $schema = new Schema();
-
-        if (false === $this->checkIfTableExists($connection, $tableName)) {
-            $table = $schema->createTable($tableName);
-
-            foreach ($keys as $key => $type) {
-                $table->addColumn($key, $type);
-            }
-
-            if ($uniqueKeys) {
-                $table->setPrimaryKey($uniqueKeys);
-            }
-
-            $platform = $connection->getDatabasePlatform();
-            $queries = $schema->toSql($platform);
-
-            foreach ($queries as $query) {
-                $connection->executeQuery($query);
-            }
-        }
-    }
-
-    /**
-     * @param $table
-     * @return bool
-     */
-    protected function checkIfTableExists(Connection $connection, $table)
-    {
-        try {
-            $query = 'SELECT count(*) as c FROM ' . $table;
-            $connection->executeQuery($query);
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -143,7 +88,11 @@ abstract class BaseTestCase extends TestCase
     {
         $url = 'https://jsonplaceholder.typicode.com/photos';
 
-        return array_slice(json_decode(file_get_contents($url)), 0, $limit);
+        if($array = json_decode(file_get_contents($url))){
+            return array_slice($array, 0, $limit);
+        }
+
+        return [];
     }
 
     /**

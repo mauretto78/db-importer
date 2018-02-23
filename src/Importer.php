@@ -15,11 +15,12 @@ use DbImporter\Exceptions\NotAllowedModeException;
 use DbImporter\Exceptions\NotIterableDataException;
 use DbImporter\Normalizer\StdClassNormalizer;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
-use DbImporter\QueryBuilder\MySqlQueryBuilder;
-use DbImporter\QueryBuilder\PgSqlQueryBuilder;
+use DbImporter\QueryBuilder\MysqlQueryBuilder;
+use DbImporter\QueryBuilder\PgsqlQueryBuilder;
 use DbImporter\QueryBuilder\SqliteQueryBuilder;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Statement;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -185,6 +186,56 @@ class Importer
     }
 
     /**
+     * @param array $tableKeys
+     * @param array|null $uniqueKeys
+     */
+    public function createSchema(
+        array $tableKeys,
+        array $uniqueKeys = null,
+        array $indexKeys = null
+    ) {
+        $schema = new Schema();
+
+        if (false === $this->checkIfTableExists()) {
+            $table = $schema->createTable($this->table);
+
+            foreach ($tableKeys as $key => $type) {
+                $table->addColumn($key, $type);
+            }
+
+            if ($uniqueKeys) {
+                $table->setPrimaryKey($uniqueKeys);
+            }
+
+            if ($indexKeys) {
+                $table->addIndex($indexKeys);
+            }
+
+            $platform = $this->dbal->getDatabasePlatform();
+            $queries = $schema->toSql($platform);
+
+            foreach ($queries as $query) {
+                $this->dbal->executeQuery($query);
+            }
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkIfTableExists()
+    {
+        try {
+            $query = 'SELECT count(*) as c FROM ' . $this->table;
+            $this->dbal->executeQuery($query);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @return array
      */
     public function getQueries()
@@ -204,16 +255,7 @@ class Importer
      */
     private function getQueryBuilder()
     {
-        switch ($this->driver) {
-            case 'pdo_mysql':
-                return MySqlQueryBuilder::class;
-
-            case 'pdo_pgsql':
-                return PgSqlQueryBuilder::class;
-
-            case 'pdo_sqlite':
-                return SqliteQueryBuilder::class;
-        }
+        return 'DbImporter\\QueryBuilder\\'.ucfirst(str_replace('pdo_','', $this->driver)).'QueryBuilder';
     }
 
     /**

@@ -79,19 +79,19 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['mysql_url'],
             'multiple',
-            $this->createPhotosStdClassArray(5000)
+            $this->createPhotosStdClassArray(200)
         );
 
         $this->makeTest(
             $this->config['mysql_url'],
             'multiple',
-            $this->createPhotosArray(5000)
+            $this->createPhotosArray(200)
         );
 
         $this->makeTest(
             $this->config['mysql_url'],
             'multiple',
-            $this->createPhotosCollection(5000)
+            $this->createPhotosCollection(200)
         );
     }
 
@@ -103,19 +103,19 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['pgsql_url'],
             'multiple',
-            $this->createPhotosStdClassArray(5000)
+            $this->createPhotosStdClassArray(200)
         );
 
         $this->makeTest(
             $this->config['pgsql_url'],
             'multiple',
-            $this->createPhotosArray(5000)
+            $this->createPhotosArray(200)
         );
 
         $this->makeTest(
             $this->config['pgsql_url'],
             'multiple',
-            $this->createPhotosCollection(5000)
+            $this->createPhotosCollection(200)
         );
     }
 
@@ -151,19 +151,19 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['mysql_url'],
             'single',
-            $this->createPhotosStdClassArray(5000)
+            $this->createPhotosStdClassArray(200)
         );
 
         $this->makeTest(
             $this->config['mysql_url'],
             'single',
-            $this->createPhotosArray(5000)
+            $this->createPhotosArray(200)
         );
 
         $this->makeTest(
             $this->config['mysql_url'],
             'single',
-            $this->createPhotosCollection(5000)
+            $this->createPhotosCollection(200)
         );
     }
 
@@ -175,19 +175,19 @@ class ImporterTest extends BaseTestCase
         $this->makeTest(
             $this->config['pgsql_url'],
             'single',
-            $this->createPhotosStdClassArray(5000)
+            $this->createPhotosStdClassArray(200)
         );
 
         $this->makeTest(
             $this->config['pgsql_url'],
             'single',
-            $this->createPhotosArray(5000)
+            $this->createPhotosArray(200)
         );
 
         $this->makeTest(
             $this->config['pgsql_url'],
             'single',
-            $this->createPhotosCollection(5000)
+            $this->createPhotosCollection(200)
         );
     }
 
@@ -253,8 +253,6 @@ class ImporterTest extends BaseTestCase
 
         $this->executeImportQueryAndPerformTests(
             $importer,
-            $connection,
-            self::TABLE_NAME,
             $keys,
             $uniqueKeys
         );

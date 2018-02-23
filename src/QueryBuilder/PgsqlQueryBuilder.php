@@ -10,7 +10,7 @@
 
 namespace DbImporter\QueryBuilder;
 
-class PgSqlQueryBuilder extends AbstractQueryBuilder
+class PgsqlQueryBuilder extends AbstractQueryBuilder
 {
     const MULTIPLE_QUERY_IMPORT_LIMIT = 4000;
 

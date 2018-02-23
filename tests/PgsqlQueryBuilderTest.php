@@ -10,10 +10,10 @@
 
 namespace DbImporter\Tests;
 
-use DbImporter\QueryBuilder\PgSqlQueryBuilder;
+use DbImporter\QueryBuilder\PgsqlQueryBuilder;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
 
-class PgSqlQueryBuilderTest extends BaseTestCase
+class PgsqlQueryBuilderTest extends BaseTestCase
 {
     /**
      * @var array
@@ -60,7 +60,7 @@ class PgSqlQueryBuilderTest extends BaseTestCase
      */
     public function it_should_returns_the_correct_multiple_insert_query()
     {
-        $qb = new PgSqlQueryBuilder(
+        $qb = new PgsqlQueryBuilder(
             'example_table',
             $this->mapping,
             $this->data,
@@ -81,7 +81,7 @@ class PgSqlQueryBuilderTest extends BaseTestCase
      */
     public function it_should_returns_the_correct_single_insert_query()
     {
-        $qb = new PgSqlQueryBuilder(
+        $qb = new PgsqlQueryBuilder(
             'example_table',
             $this->mapping,
             $this->data,

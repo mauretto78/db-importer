@@ -10,10 +10,10 @@
 
 namespace DbImporter\Tests;
 
-use DbImporter\QueryBuilder\MySqlQueryBuilder;
+use DbImporter\QueryBuilder\MysqlQueryBuilder;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
 
-class MySqlQueryBuilderTest extends BaseTestCase
+class MysqlQueryBuilderTest extends BaseTestCase
 {
     /**
      * @var array
@@ -60,7 +60,7 @@ class MySqlQueryBuilderTest extends BaseTestCase
      */
     public function it_should_returns_the_correct_multiple_insert_query()
     {
-        $qb = new MySqlQueryBuilder(
+        $qb = new MysqlQueryBuilder(
             'example_table',
             $this->mapping,
             $this->data,
@@ -81,7 +81,7 @@ class MySqlQueryBuilderTest extends BaseTestCase
      */
     public function it_should_returns_the_correct_single_insert_query()
     {
-        $qb = new MySqlQueryBuilder(
+        $qb = new MysqlQueryBuilder(
             'example_table',
             $this->mapping,
             $this->data,

@@ -10,7 +10,7 @@
 
 namespace DbImporter\QueryBuilder;
 
-class MySqlQueryBuilder extends AbstractQueryBuilder
+class MysqlQueryBuilder extends AbstractQueryBuilder
 {
     const MULTIPLE_QUERY_IMPORT_LIMIT = 4000;
 
