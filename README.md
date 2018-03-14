@@ -224,7 +224,27 @@ $indexKeys = ['album_id', 'titolo'];
 
 $importer->createSchema($keys, $uniqueKeys, $indexKeys);
 ```
+
+### Destroy Schema
  
+To destroy table scheme, use `destroySchema()` method:
+
+```php
+// ..
+
+$importer->destroySchema();
+```
+
+### Clear data table
+
+If you want to clear table data (maybe before importing data), use `clearData()` method instead:
+
+```php
+// ..
+
+$importer->clearData();
+```
+
 ## Built With
 
 * [DBAL](http://www.doctrine-project.org/projects/dbal.html) - Database Abstraction Layer

@@ -46,7 +46,7 @@ class SqliteQueryBuilder extends AbstractQueryBuilder
      *
      * @return array
      */
-    public function getQueries($mode = 'multiple')
+    public function getInsertQueries($mode = 'multiple')
     {
         $sql = [];
 
@@ -55,5 +55,29 @@ class SqliteQueryBuilder extends AbstractQueryBuilder
         }
 
         return $sql;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClearDataQuery()
+    {
+        return 'DELETE FROM `'.$this->table.'`';
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchemaDestroyQuery()
+    {
+        return 'DROP TABLE `'.$this->table.'`';
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableExistsQuery()
+    {
+        return 'SELECT count(*) as c FROM `'.$this->table.'`';
     }
 }

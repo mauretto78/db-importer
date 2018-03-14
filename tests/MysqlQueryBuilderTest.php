@@ -25,6 +25,11 @@ class MysqlQueryBuilderTest extends BaseTestCase
      */
     private $mapping;
 
+    /**
+     * @var QueryBuilderInterface
+     */
+    private $qb;
+
     public function setUp()
     {
         $this->data = [
@@ -53,6 +58,13 @@ class MysqlQueryBuilderTest extends BaseTestCase
             'name' => 'name_utente',
             'username' => 'username_utente',
         ];
+
+        $this->qb = new MysqlQueryBuilder(
+            'example_table',
+            $this->mapping,
+            $this->data,
+            true
+        );
     }
 
     /**
@@ -60,18 +72,11 @@ class MysqlQueryBuilderTest extends BaseTestCase
      */
     public function it_should_returns_the_correct_multiple_insert_query()
     {
-        $qb = new MysqlQueryBuilder(
-            'example_table',
-            $this->mapping,
-            $this->data,
-            true
-        );
-
-        $queries = $qb->getQueries();
+        $queries = $this->qb->getInsertQueries();
         foreach ($queries as $query) {
             $expectedQuery = 'INSERT IGNORE INTO `example_table` (`id`, `name`, `username`) VALUES (:id_utente_1, :name_utente_1, :username_utente_1), (:id_utente_2, :name_utente_2, :username_utente_2), (:id_utente_3, :name_utente_3, :username_utente_3) ON DUPLICATE KEY UPDATE `id`=VALUES(id), `name`=VALUES(name), `username`=VALUES(username)';
 
-            $this->assertInstanceOf(QueryBuilderInterface::class, $qb);
+            $this->assertInstanceOf(QueryBuilderInterface::class, $this->qb);
             $this->assertEquals($query, $expectedQuery);
         }
     }
@@ -81,21 +86,44 @@ class MysqlQueryBuilderTest extends BaseTestCase
      */
     public function it_should_returns_the_correct_single_insert_query()
     {
-        $qb = new MysqlQueryBuilder(
-            'example_table',
-            $this->mapping,
-            $this->data,
-            true
-        );
-
-        $queries = $qb->getQueries('single');
+        $queries = $this->qb->getInsertQueries('single');
         foreach ($queries as $query) {
             $expectedQuery = 'INSERT IGNORE INTO `example_table` (`id`, `name`, `username`) VALUES (:id_utente, :name_utente, :username_utente) ON DUPLICATE KEY UPDATE `id`=VALUES(id), `name`=VALUES(name), `username`=VALUES(username)';
 
-            $this->assertInstanceOf(QueryBuilderInterface::class, $qb);
+            $this->assertInstanceOf(QueryBuilderInterface::class, $this->qb);
             $this->assertEquals($query, $expectedQuery);
         }
 
         $this->assertCount(3, $queries);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_returns_the_correct_clear_data_query()
+    {
+        $expectedQuery = $this->qb->getClearDataQuery();
+
+        $this->assertEquals('TRUNCATE TABLE `example_table`', $expectedQuery);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_returns_the_correct_destroy_schema_query()
+    {
+        $expectedQuery = $this->qb->getSchemaDestroyQuery();
+
+        $this->assertEquals('DROP TABLE `example_table`', $expectedQuery);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_returns_the_table_exists_query()
+    {
+        $expectedQuery = $this->qb->getTableExistsQuery();
+
+        $this->assertEquals('SELECT count(*) as c FROM `example_table`', $expectedQuery);
     }
 }

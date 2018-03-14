@@ -31,6 +31,8 @@ abstract class BaseTestCase extends TestCase
         array $keys,
         array $uniqueKeys = null
     ) {
+        $importer->clearData();
+        $importer->destroySchema();
         $importer->createSchema($keys, $uniqueKeys);
         $this->assertInstanceOf(Importer::class, $importer);
         $this->assertTrue($importer->execute());

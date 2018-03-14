@@ -24,5 +24,20 @@ interface QueryBuilderInterface
      *
      * @return array
      */
-    public function getQueries($mode = 'multiple');
+    public function getInsertQueries($mode = 'multiple');
+
+    /**
+     * @return string
+     */
+    public function getClearDataQuery();
+
+    /**
+     * @return string
+     */
+    public function getSchemaDestroyQuery();
+
+    /**
+     * @return string
+     */
+    public function getTableExistsQuery();
 }

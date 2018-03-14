@@ -15,9 +15,6 @@ use DbImporter\Exceptions\NotAllowedModeException;
 use DbImporter\Exceptions\NotIterableDataException;
 use DbImporter\Normalizer\StdClassNormalizer;
 use DbImporter\QueryBuilder\Contracts\QueryBuilderInterface;
-use DbImporter\QueryBuilder\MysqlQueryBuilder;
-use DbImporter\QueryBuilder\PgsqlQueryBuilder;
-use DbImporter\QueryBuilder\SqliteQueryBuilder;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
@@ -80,6 +77,11 @@ class Importer
     private $mode;
 
     /**
+     * @var QueryBuilderInterface
+     */
+    private $qb;
+
+    /**
      * Importer constructor.
      * @param Connection $dbal
      * @param $table
@@ -105,6 +107,14 @@ class Importer
         $this->data = $this->normalize($data);
         $this->ignoreErrors = $skipDuplicates;
         $this->mode = $mode;
+
+        $queryBuilder = $this->getQueryBuilder();
+        $this->qb = (new $queryBuilder(
+            $this->table,
+            $this->mapping,
+            $this->data,
+            $this->ignoreErrors
+        ));
     }
 
     /**
@@ -186,8 +196,17 @@ class Importer
     }
 
     /**
+     * truncate data in the table
+     */
+    public function clearData()
+    {
+        $this->dbal->executeQuery($this->qb->getClearDataQuery());
+    }
+
+    /**
      * @param array $tableKeys
      * @param array|null $uniqueKeys
+     * @param array|null $indexKeys
      */
     public function createSchema(
         array $tableKeys,
@@ -226,8 +245,7 @@ class Importer
     private function checkIfTableExists()
     {
         try {
-            $query = 'SELECT count(*) as c FROM ' . $this->table;
-            $this->dbal->executeQuery($query);
+            $this->dbal->executeQuery($this->qb->getTableExistsQuery());
         } catch (\Exception $e) {
             return false;
         }
@@ -236,18 +254,19 @@ class Importer
     }
 
     /**
+     * destroy database schema
+     */
+    public function destroySchema()
+    {
+        $this->dbal->executeQuery($this->qb->getSchemaDestroyQuery());
+    }
+
+    /**
      * @return array
      */
     public function getQueries()
     {
-        $queryBuilder = $this->getQueryBuilder();
-
-        return (new $queryBuilder(
-            $this->table,
-            $this->mapping,
-            $this->data,
-            $this->ignoreErrors
-        ))->getQueries($this->mode);
+        return ($this->qb->getInsertQueries($this->mode));
     }
 
     /**
